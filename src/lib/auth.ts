@@ -3,7 +3,8 @@ import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { MongoClient } from "mongodb";
 
 const client = new MongoClient(process.env.BETTER_AUTH_DB_URL!);
-const db = client.db();
+// Explicitly "bachelor-point" pass kore dilam
+const db = client.db("bachelor-point");
 
 export const auth = betterAuth({
   database: mongodbAdapter(db),
