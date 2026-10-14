@@ -12,13 +12,18 @@ export default function SignInPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  // Handle Email Password Sign In
+  // Handle Email Password Sign In with 30 Days Persistent Session
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     await authClient.signIn.email(
-      { email, password, callbackURL: "/dashboard" },
+      { 
+        email, 
+        password, 
+        rememberMe: true, // 1 month persistent login status active rakhar jonno
+        callbackURL: "/dashboard" 
+      },
       {
         onSuccess: () => {
           setLoading(false);

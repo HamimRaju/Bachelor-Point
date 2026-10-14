@@ -1,6 +1,17 @@
+"use client";
+
 import Link from "next/link";
 
 export default function OnboardingPage() {
+  // Flat members local & fallback avatar list
+  const members = [
+    { name: "Raju", avatar: "/Raju.jpg", initials: "HR" },
+    { name: "Rubel", avatar: "/Rubel.jpg", initials: "RA" },
+    { name: "Arefin", avatar: "/Arefin.jpg", initials: "SA" },
+    { name: "Real", avatar: null, initials: "RH" },
+    { name: "Radin", avatar: null, initials: "AR" },
+  ];
+
   return (
     <main className="min-h-screen bg-[#070b19] flex items-center justify-center p-4 relative overflow-hidden font-sans">
       {/* Background Dot Matrix Pattern */}
@@ -16,7 +27,7 @@ export default function OnboardingPage() {
       <div className="w-full max-w-sm bg-[#0b132b] border border-[#1e293b]/60 rounded-[36px] p-6 sm:p-8 flex flex-col items-center text-center relative z-10 shadow-2xl shadow-black/80">
         
         {/* Central App Logo Icon */}
-        <div className="w-20 h-20 rounded-2xl bg-linear-to-b from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30 mb-6 border border-blue-400/30">
+        <div className="w-20 h-20 rounded-2xl bg-gradient-to-b from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30 mb-6 border border-blue-400/30">
           <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
           </svg>
@@ -34,22 +45,28 @@ export default function OnboardingPage() {
 
         {/* Avatar Group & Description Card */}
         <div className="w-full bg-[#111c38]/80 border border-slate-800/80 rounded-2xl p-5 mb-8 flex flex-col items-center shadow-inner">
+          
+          {/* Avatar Group with Local Images */}
           <div className="flex items-center justify-center -space-x-3 mb-4">
-            <div className="w-10 h-10 rounded-full border-2 border-[#111c38] overflow-hidden bg-slate-700">
-              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="User" className="w-full h-full object-cover" />
-            </div>
-            <div className="w-10 h-10 rounded-full border-2 border-[#111c38] overflow-hidden bg-slate-700">
-              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" alt="User" className="w-full h-full object-cover" />
-            </div>
-            <div className="w-10 h-10 rounded-full border-2 border-[#111c38] overflow-hidden bg-slate-700">
-              <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80" alt="User" className="w-full h-full object-cover" />
-            </div>
-            <div className="w-10 h-10 rounded-full border-2 border-[#111c38] overflow-hidden bg-slate-700">
-              <img src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=100&auto=format&fit=crop&q=80" alt="User" className="w-full h-full object-cover" />
-            </div>
-            <div className="w-10 h-10 rounded-full border-2 border-[#111c38] overflow-hidden bg-slate-700">
-              <img src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=100&auto=format&fit=crop&q=80" alt="User" className="w-full h-full object-cover" />
-            </div>
+            {members.map((member, idx) => (
+              <div 
+                key={idx} 
+                className="w-10 h-10 rounded-full border-2 border-[#111c38] overflow-hidden bg-slate-800 flex items-center justify-center shadow-md relative"
+                title={member.name}
+              >
+                {member.avatar ? (
+                  <img 
+                    src={member.avatar} 
+                    alt={member.name} 
+                    className="w-full h-full object-cover" 
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-extrabold text-[11px] flex items-center justify-center">
+                    {member.initials}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
 
           <p className="text-xs text-slate-300 leading-relaxed font-medium px-1">
