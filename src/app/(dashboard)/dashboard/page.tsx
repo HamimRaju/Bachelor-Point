@@ -2,15 +2,25 @@
 
 import Link from "next/link";
 import BottomNav from "@/components/BottomNav";
-import { authClient } from "@/lib/auth-client"; // Better auth client hook import
+import { authClient } from "@/lib/auth-client";
 
 export default function DashboardPage() {
   // Fetch real user session from Better Auth
   const { data: session } = authClient.useSession();
 
-  // Get user name and image dynamically, with fallback to local Raju image
+  // Dynamic Avatar Mapping based on user name/email
+  const avatarMap: Record<string, string> = {
+    "Hamim Islam Raju": "/Raju.jpg",
+    "Raju": "/Raju.jpg",
+    "Rubel Ahmed": "/Rubel.jpg",
+    "Rubel": "/Rubel.jpg",
+    "Sowad Arefin": "/Arefin.jpg",
+    "Arefin": "/Arefin.jpg",
+  };
+
+  // Get logged-in user name and avatar dynamically
   const userName = session?.user?.name || "Raju";
-  const userImage = session?.user?.image || "/Raju.jpg";
+  const userImage = avatarMap[userName] || session?.user?.image || "/Raju.jpg";
 
   // Current user's assigned rotation tasks for today
   const myTasksToday = [
@@ -59,7 +69,7 @@ export default function DashboardPage() {
             </div>
             <div>
               <h2 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
-                Good morning, {userName} 👋
+                {userName} 👋
               </h2>
               <p className="text-[11px] text-slate-400 font-medium">Flat Member • Block B, House 14</p>
             </div>
