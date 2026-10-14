@@ -1,127 +1,106 @@
+"use client";
+
 import Link from "next/link";
-import ExpenseSummary from "@/components/ExpenseSummary"; // Import line
 
 export default function DashboardPage() {
-    return (
-        <div className="max-w-md mx-auto min-h-screen bg-slate-50 pb-24 pt-6 px-4 space-y-6">
-            {/* Top Header Profile & Notifications */}
-            <div className="flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 font-bold flex items-center justify-center text-sm">
-                        RA
-                    </div>
-                    <div>
-                        <h2 className="text-sm font-bold text-slate-900">
-                            Sheikh Raju
-                        </h2>
-                        <p className="text-[11px] text-slate-400">
-                            Flat No: 3B • Bachelor Point
-                        </p>
-                    </div>
-                </div>
-                <Link
-                    href="/profile"
-                    className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition cursor-pointer"
-                >
-                    ⚙️
-                </Link>
-            </div>
-
-            {/* 📊 Added Analytics & Summary Card Here */}
-            <ExpenseSummary />
-
-            {/* Quick Summary Cards Grid */}
-            <div className="grid grid-cols-2 gap-3">
-                <Link
-                    href="/bills"
-                    className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:border-blue-200 transition"
-                >
-                    <p className="text-[11px] font-semibold text-slate-400 uppercase">
-                        Fixed Bills
-                    </p>
-                    <h3 className="text-lg font-black text-slate-900 mt-1">
-                        2 / 3 Paid
-                    </h3>
-                    <p className="text-[10px] text-emerald-600 mt-0.5">
-                        WiFi & Rent status
-                    </p>
-                </Link>
-                <Link
-                    href="/expenses"
-                    className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:border-blue-200 transition"
-                >
-                    <p className="text-[11px] font-semibold text-slate-400 uppercase">
-                        You Will Get
-                    </p>
-                    <h3 className="text-lg font-black text-blue-600 mt-1">
-                        ৳ 320
-                    </h3>
-                    <p className="text-[10px] text-slate-400 mt-0.5">
-                        From 4 members
-                    </p>
-                </Link>
-            </div>
-
-            {/* Active Queue Task Banner */}
-            <div className="bg-linear-to-r from-blue-600 to-indigo-600 rounded-2xl p-5 text-white shadow-lg shadow-blue-600/20 space-y-3">
-                <div className="flex items-center justify-between">
-                    <span className="text-[10px] uppercase font-bold tracking-wider bg-white/20 px-2.5 py-1 rounded-full">
-                        Your Turn Today
-                    </span>
-                    <span className="text-xs">🛒 Shopping</span>
-                </div>
-                <div>
-                    <h3 className="text-lg font-bold">Lobon kena (1kg)</h3>
-                    <p className="text-xs text-blue-100 mt-0.5">
-                        Please buy this item before evening.
-                    </p>
-                </div>
-                <div className="flex gap-2 pt-1">
-                    <Link
-                        href="/tasks"
-                        className="flex-1 py-2 bg-white text-blue-600 font-semibold text-xs rounded-xl text-center shadow-sm hover:bg-blue-50 transition"
-                    >
-                        Mark as Kinlam ✓
-                    </Link>
-                </div>
-            </div>
-
-            {/* Quick Access Modules */}
-            <div className="space-y-3">
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">
-                    Quick Navigation
-                </h3>
-
-                <div className="grid grid-cols-3 gap-3">
-                    <Link
-                        href="/tasks"
-                        className="bg-white p-4 rounded-2xl border border-slate-100 text-center hover:shadow-md transition"
-                    >
-                        <span className="text-2xl">📋</span>
-                        <h4 className="text-xs font-bold text-slate-800 mt-2">
-                            Queue Tasks
-                        </h4>
-                    </Link>
-                    <Link
-                        href="/bills"
-                        className="bg-white p-4 rounded-2xl border border-slate-100 text-center hover:shadow-md transition"
-                    >
-                        <span className="text-2xl">💳</span>
-                        <h4 className="text-xs font-bold text-slate-800 mt-2">
-                            Fixed Bills
-                        </h4>
-                    </Link>
-                    <Link
-                        href="/expenses"
-                        className="bg-white p-4 rounded-2xl border border-slate-100 text-center hover:shadow-md transition"
-                    >
-                        <span className="text-2xl">💰</span>
-                        <h4 className="text-xs font-bold text-slate-800 mt-2">
-                            Split Bazaar
-                        </h4>
-                    </Link>
-                </div>
-            </div>
+  return (
+    <div className="max-w-md mx-auto min-h-screen bg-slate-50 pb-24 pt-4 px-4 space-y-5">
+      {/* Header Profile Section */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-white shadow-sm bg-slate-200">
+            <img 
+              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" 
+              alt="User" 
+              className="w-full h-full object-cover" 
+            />
+          </div>
+          <div>
+            <h2 className="text-sm font-bold text-slate-900 flex items-center gap-1">
+              Good morning, Radin 👋
+            </h2>
+            <p className="text-[11px] text-slate-400 font-medium">Flat Admin • Block B, House 14</p>
+          </div>
         </div>
-    );
+
+        <button className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition">
+          🔔
+        </button>
+      </div>
+
+      {/* Main Banner Card */}
+      <div className="bg-linear-to-br from-blue-600 to-blue-700 text-white rounded-3xl p-6 shadow-xl shadow-blue-600/20 relative overflow-hidden">
+        <span className="text-[10px] uppercase font-extrabold tracking-widest bg-white/20 px-3 py-1 rounded-full text-white">
+          BACHELOR POINT
+        </span>
+        <h3 className="text-lg font-bold mt-3 leading-snug">
+          Together we manage, better we live.
+        </h3>
+
+        <div className="flex justify-between items-end mt-6 pt-2">
+          <div>
+            <p className="text-[11px] text-blue-100 font-semibold">5 Active</p>
+            <p className="text-xs font-bold text-white">Members</p>
+          </div>
+          <div className="text-right">
+            <p className="text-xl font-black tracking-tight text-white">৳2,450 <span className="text-xs font-normal text-blue-100">Month</span></p>
+            <p className="text-[11px] text-blue-100 font-semibold">Total</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Today's Tasks Section */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Todays Tasks</h3>
+          <Link href="/tasks" className="text-xs font-bold text-blue-600 hover:underline">View all</Link>
+        </div>
+
+        <div className="bg-white rounded-3xl p-4 border border-slate-100 shadow-sm space-y-3">
+          {/* Active Highlighted Task */}
+          <div className="bg-blue-50/70 rounded-2xl p-3.5 flex items-center justify-between border border-blue-100">
+            <div className="flex items-center gap-3">
+              <span className="text-blue-600 text-lg">✨</span>
+              <div>
+                <h4 className="text-xs font-bold text-slate-900">Washroom Clean</h4>
+                <p className="text-[10px] text-blue-600 font-semibold">Your turn today!</p>
+              </div>
+            </div>
+            <button className="px-4 py-1.5 bg-blue-600 text-white text-xs font-bold rounded-xl shadow-sm hover:bg-blue-700">
+              Done
+            </button>
+          </div>
+
+          {/* Other Pending Tasks */}
+          <div className="flex items-center justify-between py-1 px-1">
+            <div className="flex items-center gap-3">
+              <span className="text-slate-400 text-base">🛒</span>
+              <div>
+                <h4 className="text-xs font-bold text-slate-800">Polythene kena</h4>
+                <p className="text-[10px] text-slate-400">Rubels turn</p>
+              </div>
+            </div>
+            <span className="text-slate-300">›</span>
+          </div>
+
+          <div className="flex items-center justify-between py-1 px-1">
+            <div className="flex items-center gap-3">
+              <span className="text-slate-400 text-base">🛒</span>
+              <div>
+                <h4 className="text-xs font-bold text-slate-800">Vimbar kena</h4>
+                <p className="text-[10px] text-slate-400">Arefins turn</p>
+              </div>
+            </div>
+            <span className="text-slate-300">›</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Pending Extra Splits Section */}
+      <div className="flex items-center justify-between pt-1">
+        <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Pending Extra Splits</h3>
+        <Link href="/expenses" className="text-xs font-bold text-blue-600 hover:underline">Details</Link>
+      </div>
+    </div>
+  );
 }

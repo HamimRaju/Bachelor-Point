@@ -1,111 +1,71 @@
 "use client";
 
 import { useState } from "react";
-import { completeTask, skipTask } from "@/actions/task.actions";
-
-interface TaskItem {
-  id: string;
-  title: string;
-  category: string;
-  assignee: string;
-}
-
-const PRESET_TASKS: TaskItem[] = [
-  { id: "1", title: "Polythene kena", category: "Shopping", assignee: "Rubel" },
-  { id: "2", title: "Vimbar kena", category: "Shopping", assignee: "Arefin" },
-  { id: "3", title: "Harpic kena", category: "Shopping", assignee: "Real" },
-  { id: "4", title: "Washroom clean kora", category: "Cleaning", assignee: "Raju" },
-  { id: "5", title: "Jharu kena", category: "Shopping", assignee: "Radin" },
-  { id: "6", title: "Lobon kena", category: "Shopping", assignee: "You" },
-];
 
 export default function TasksPage() {
-  const [tasks] = useState<TaskItem[]>(PRESET_TASKS);
-  const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [filter, setFilter] = useState("All");
 
-  const handleAction = async (id: string, action: "kinlam" | "skip") => {
-    setLoadingId(id);
-
-    try {
-      // Dummy user ID for frontend preview, in real execution it connects with auth session
-      const dummyUserId = "650000000000000000000001";
-
-      if (action === "kinlam") {
-        await completeTask(id, dummyUserId);
-      } else {
-        await skipTask(id, dummyUserId);
-      }
-    } catch {
-      // Fallback UI toast for local testing
-      alert(
-        action === "kinlam"
-          ? "Task completed! Rotated to next person."
-          : "Task skipped! Passed to next person."
-      );
-    } finally {
-      setLoadingId(null);
-    }
-  };
+  const tasks = [
+    { id: 1, title: "Polythene kena", turn: "Rubel", type: "shopping", icon: "🛒" },
+    { id: 2, title: "Vimbar kena", turn: "Arefin", type: "shopping", icon: "🛒" },
+    { id: 3, title: "Harpic kena", turn: "Real", type: "shopping", icon: "🛒" },
+    { id: 4, title: "Washroom clean kora", turn: "Raju", type: "cleaning", icon: "✨" },
+  ];
 
   return (
-    <div className="max-w-md mx-auto min-h-screen bg-slate-50 pb-24 pt-6 px-4">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+    <div className="max-w-md mx-auto min-h-screen bg-slate-50 pb-24 pt-4 px-4 space-y-5">
+      {/* Page Title & Add Button */}
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-slate-900">Step 1: Queue Tasks</h1>
-          <p className="text-xs text-slate-500">ঘূর্ণায়মান দায়িত্ব ও বাজার</p>
+          <h1 className="text-lg font-black text-slate-900 tracking-tight">Step 1: Queue Tasks</h1>
+          <p className="text-xs text-slate-400 font-medium">Chores & grocery turn rotations</p>
         </div>
-        <button className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg shadow-md shadow-blue-600/30">
+        <button className="w-9 h-9 bg-blue-50 text-blue-600 rounded-full font-bold flex items-center justify-center text-lg hover:bg-blue-100 transition">
           +
         </button>
       </div>
 
-      {/* Category Pills */}
-      <div className="flex gap-2 mb-6 overflow-x-auto pb-1 scrollbar-none">
-        <span className="px-4 py-1.5 bg-blue-600 text-white text-xs font-semibold rounded-full shadow-sm cursor-pointer">
-          All Tasks
-        </span>
-        <span className="px-4 py-1.5 bg-white text-slate-600 text-xs font-medium rounded-full border border-slate-200 cursor-pointer">
-          Shopping
-        </span>
-        <span className="px-4 py-1.5 bg-white text-slate-600 text-xs font-medium rounded-full border border-slate-200 cursor-pointer">
-          Cleaning
-        </span>
+      {/* Category Filter Pills */}
+      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+        {["All", "Shopping", "Cleaning", "Bills"].map((item) => (
+          <button
+            key={item}
+            onClick={() => setFilter(item)}
+            className={`px-4 py-2 rounded-2xl text-xs font-bold transition ${
+              filter === item
+                ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
+                : "bg-white text-slate-600 border border-slate-100 hover:bg-slate-100"
+            }`}
+          >
+            {item}
+          </button>
+        ))}
       </div>
 
-      {/* Task List Cards */}
+      {/* Task Queue List */}
       <div className="space-y-3">
         {tasks.map((task) => (
           <div
             key={task.id}
-            className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm hover:shadow-md transition flex items-center justify-between"
+            className="bg-white rounded-3xl p-4 border border-slate-100 shadow-sm flex items-center justify-between"
           >
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg font-bold">
-                {task.title.includes("Washroom") ? "🧹" : task.title.includes("Harpic") ? "🧴" : "🛒"}
+            <div className="flex items-center gap-3.5">
+              <div className="w-11 h-11 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+                {task.icon}
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-slate-900">{task.title}</h3>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Current Turn: <span className="font-medium text-blue-600">{task.assignee}</span>
+                <h3 className="text-xs font-bold text-slate-900">{task.title}</h3>
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  Turn: <span className="font-bold text-blue-600">{task.turn}</span>
                 </p>
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex gap-1.5">
-              <button
-                onClick={() => handleAction(task.id, "kinlam")}
-                disabled={loadingId === task.id}
-                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg shadow-sm transition active:scale-95 disabled:opacity-50"
-              >
-                Kinlam
+            <div className="flex items-center gap-2">
+              <button className="px-3.5 py-2 bg-emerald-600 text-white text-[11px] font-bold rounded-2xl shadow-sm hover:bg-emerald-700 active:scale-95 transition">
+                Kinlam / Done
               </button>
-              <button
-                onClick={() => handleAction(task.id, "skip")}
-                disabled={loadingId === task.id}
-                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-medium rounded-lg transition active:scale-95 disabled:opacity-50"
-              >
+              <button className="px-3 py-2 bg-slate-100 text-slate-500 text-[11px] font-bold rounded-2xl hover:bg-slate-200 transition">
                 Skip
               </button>
             </div>
