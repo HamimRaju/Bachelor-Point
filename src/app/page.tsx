@@ -15,16 +15,6 @@ export default function OnboardingPage() {
       {/* Main Container Card */}
       <div className="w-full max-w-sm bg-[#0b132b] border border-[#1e293b]/60 rounded-[36px] p-6 sm:p-8 flex flex-col items-center text-center relative z-10 shadow-2xl shadow-black/80">
         
-        {/* Top Test Link */}
-        <div className="w-full flex justify-end mb-2">
-          <Link 
-            href="/dashboard" 
-            className="text-xs font-semibold text-blue-400 hover:text-blue-300 flex items-center gap-1 transition"
-          >
-            Test <span className="text-sm">›</span>
-          </Link>
-        </div>
-
         {/* Central App Logo Icon */}
         <div className="w-20 h-20 rounded-2xl bg-linear-to-b from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30 mb-6 border border-blue-400/30">
           <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -44,7 +34,6 @@ export default function OnboardingPage() {
 
         {/* Avatar Group & Description Card */}
         <div className="w-full bg-[#111c38]/80 border border-slate-800/80 rounded-2xl p-5 mb-8 flex flex-col items-center shadow-inner">
-          {/* Overlapping Avatars */}
           <div className="flex items-center justify-center -space-x-3 mb-4">
             <div className="w-10 h-10 rounded-full border-2 border-[#111c38] overflow-hidden bg-slate-700">
               <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="User" className="w-full h-full object-cover" />
