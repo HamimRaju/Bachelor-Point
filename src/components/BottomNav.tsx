@@ -18,7 +18,7 @@ export default function BottomNav() {
     },
     {
       name: "Tasks",
-      href: "/tasks",
+      href: "/tasks/detail", // Direct Task Detail page link
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
@@ -58,10 +58,13 @@ export default function BottomNav() {
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 py-2.5 px-4 z-50 shadow-lg">
       <div className="max-w-md mx-auto flex justify-around items-center">
         {navItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive =
+            pathname === item.href ||
+            (item.name === "Tasks" && pathname.startsWith("/tasks"));
+
           return (
             <Link
-              key={item.href}
+              key={item.name}
               href={item.href}
               className={`flex flex-col items-center gap-1 transition-all ${
                 isActive
