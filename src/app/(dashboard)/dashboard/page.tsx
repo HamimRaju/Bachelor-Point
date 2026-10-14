@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ExpenseSummary from "@/components/ExpenseSummary"; // Import line
 
 export default function DashboardPage() {
     return (
@@ -18,10 +19,16 @@ export default function DashboardPage() {
                         </p>
                     </div>
                 </div>
-                <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 cursor-pointer">
-                    🔔
-                </div>
+                <Link
+                    href="/profile"
+                    className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition cursor-pointer"
+                >
+                    ⚙️
+                </Link>
             </div>
+
+            {/* 📊 Added Analytics & Summary Card Here */}
+            <ExpenseSummary />
 
             {/* Quick Summary Cards Grid */}
             <div className="grid grid-cols-2 gap-3">
