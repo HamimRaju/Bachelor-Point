@@ -14,9 +14,9 @@ export function PageFrame({
 }: ClassNameProps & { children: ReactNode }) {
   return (
     <main
-      className={`app-backdrop px-4 pb-32 pt-6 text-white ${className}`}
+      className={`app-backdrop px-3 pb-28 pt-4 text-white sm:px-4 sm:pb-32 sm:pt-6 ${className}`}
     >
-      <div className="mx-auto w-full max-w-md space-y-6">{children}</div>
+      <div className="mx-auto w-full max-w-md space-y-5 sm:space-y-6">{children}</div>
     </main>
   );
 }

@@ -131,7 +131,7 @@ export default function TaskDetailPage() {
 
     if (!currentTask) {
         return (
-            <main className="app-backdrop pb-28 pt-4 px-4 font-sans text-white">
+            <main className="app-backdrop px-3 pb-28 pt-4 font-sans text-white sm:px-4">
                 <div className="glass-surface mx-auto max-w-md rounded-2xl p-6 text-center text-sm text-[#131321]/60 shadow-none">
                     {isLoading ? "Loading task rotations…" : loadError ?? "No tasks are available."}
                 </div>
@@ -140,7 +140,7 @@ export default function TaskDetailPage() {
     }
 
     return (
-        <main className="app-backdrop relative pb-28 pt-4 px-4 font-sans text-white">
+        <main className="app-backdrop relative px-3 pb-28 pt-4 font-sans text-white sm:px-4">
             {/* Toast Notification */}
             {toast && (
                 <div className="fixed top-5 right-5 z-50 transition-all duration-300">
@@ -170,7 +170,7 @@ export default function TaskDetailPage() {
                 </div>
 
                 {/* Task Detail Card with Navigation Slider */}
-                <div className="glass-surface rounded-[32px] p-6 shadow-none text-center flex flex-col items-center space-y-4 relative">
+                <div className="glass-surface relative flex flex-col items-center space-y-4 rounded-[32px] p-4 text-center shadow-none sm:p-6">
                     <button
                         onClick={handlePrevTask}
                         className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-[#131321]/[0.04] border border-[#131321]/10 flex items-center justify-center text-[#131321]/65 hover:bg-[#131321]/5 transition shadow-none font-bold active:scale-95"
@@ -289,7 +289,7 @@ export default function TaskDetailPage() {
                 </div>
 
                 {/* Rotation Order Section Card */}
-                <div className="glass-surface rounded-[28px] p-5 shadow-none space-y-3">
+                <div className="glass-surface space-y-3 rounded-[28px] p-4 shadow-none sm:p-5">
                     <div className="flex items-center justify-between">
                         <h3 className="text-xs font-bold text-[#131321] uppercase tracking-wider">
                             Rotation Members
@@ -366,7 +366,7 @@ export default function TaskDetailPage() {
                 </div>
 
                 {/* Detailed Completion & Skip History Log (Dynamic Date & Time Display) */}
-                <div className="glass-surface rounded-[28px] p-5 shadow-none space-y-3">
+                <div className="glass-surface space-y-3 rounded-[28px] p-4 shadow-none sm:p-5">
                     <div className="flex items-center justify-between border-b border-[#131321]/10 pb-2">
                         <h3 className="text-xs font-bold text-[#131321] uppercase tracking-wider">
                             Completion & Skip History

@@ -262,21 +262,21 @@ export default function ExpensesPage() {
       )}
 
       {isAddExpenseOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#131321]/85 p-4">
-          <SurfaceCard className="w-full max-w-sm p-5">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#131321]/85 p-3 sm:p-4">
+          <SurfaceCard className="max-h-[calc(100dvh-1.5rem)] w-full max-w-sm overflow-y-auto p-4 sm:max-h-[calc(100dvh-2rem)] sm:p-5">
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-base font-bold">Add shared expense</h2>
               <button type="button" onClick={() => setIsAddExpenseOpen(false)} aria-label="Close" className="gradient-panel flex h-9 w-9 items-center justify-center rounded-full text-white">×</button>
             </div>
             <form onSubmit={handleAddExpenseSubmit} className="mt-4 space-y-3">
               <label className="block text-xs font-bold">Expense name
-                <input value={expenseTitle} onChange={(event) => setExpenseTitle(event.target.value)} required placeholder="e.g. Groceries" className="mt-1.5 w-full rounded-2xl border border-[#131321]/15 bg-white px-4 py-3 text-sm text-[#131321] placeholder:text-[#131321]/45" />
+                <input value={expenseTitle} onChange={(event) => setExpenseTitle(event.target.value)} required placeholder="e.g. Groceries" className="mt-1.5 w-full rounded-2xl border border-[#131321]/15 bg-white px-4 py-3 text-base text-[#131321] placeholder:text-[#131321]/45 sm:text-sm" />
               </label>
               <label className="block text-xs font-bold">Amount (৳)
-                <input type="number" min="1" step="1" value={expenseAmount} onChange={(event) => setExpenseAmount(event.target.value)} required placeholder="0" className="mt-1.5 w-full rounded-2xl border border-[#131321]/15 bg-white px-4 py-3 text-sm text-[#131321] placeholder:text-[#131321]/45" />
+                <input type="number" min="1" step="1" value={expenseAmount} onChange={(event) => setExpenseAmount(event.target.value)} required placeholder="0" className="mt-1.5 w-full rounded-2xl border border-[#131321]/15 bg-white px-4 py-3 text-base text-[#131321] placeholder:text-[#131321]/45 sm:text-sm" />
               </label>
               <label className="block text-xs font-bold">Paid by
-                <select value={expensePayer} onChange={(event) => setExpensePayer(event.target.value as MemberName)} className="mt-1.5 w-full rounded-2xl border border-[#131321]/15 bg-white px-4 py-3 text-sm text-[#131321]">
+                <select value={expensePayer} onChange={(event) => setExpensePayer(event.target.value as MemberName)} className="mt-1.5 w-full rounded-2xl border border-[#131321]/15 bg-white px-4 py-3 text-base text-[#131321] sm:text-sm">
                   {FLAT_MEMBERS.map((member) => <option key={member} value={member}>{member}</option>)}
                 </select>
               </label>

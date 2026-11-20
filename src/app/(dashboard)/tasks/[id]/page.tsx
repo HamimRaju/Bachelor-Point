@@ -131,7 +131,7 @@ export default function TaskDetailPage() {
   }
 
   return (
-    <main className="app-backdrop pb-12 pt-4 px-4 font-sans text-white">
+    <main className="app-backdrop px-3 pb-12 pt-4 font-sans text-white sm:px-4">
       
       {/* Toast Notification */}
       {toast && (
@@ -162,7 +162,7 @@ export default function TaskDetailPage() {
         </div>
 
         {/* Task Detail Main Card with Slider Arrows */}
-        <div className="glass-surface rounded-[32px] p-6 shadow-none text-center flex flex-col items-center space-y-4 relative">
+        <div className="glass-surface relative flex flex-col items-center space-y-4 rounded-[32px] p-4 text-center shadow-none sm:p-6">
           
           {/* Left & Right Slider Arrows */}
           <button 
@@ -236,7 +236,7 @@ export default function TaskDetailPage() {
         </div>
 
         {/* Rotation Order Section Card with Tick Mark on Completed Members */}
-        <div className="glass-surface rounded-[28px] p-5 shadow-none space-y-3">
+        <div className="glass-surface space-y-3 rounded-[28px] p-4 shadow-none sm:p-5">
           <h3 className="text-xs font-bold text-[#131321] uppercase tracking-wider">Rotation Order</h3>
           
           <div className="flex items-center justify-between overflow-x-auto py-2 px-1">
@@ -285,7 +285,7 @@ export default function TaskDetailPage() {
         </div>
 
         {/* Completion History Section Card */}
-        <div className="glass-surface rounded-[28px] p-5 shadow-none space-y-3">
+        <div className="glass-surface space-y-3 rounded-[28px] p-4 shadow-none sm:p-5">
           <h3 className="text-xs font-bold text-[#131321] uppercase tracking-wider">Completion History</h3>
           
           <div className="space-y-2">

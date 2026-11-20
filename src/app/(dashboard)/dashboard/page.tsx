@@ -147,18 +147,18 @@ export default function DashboardPage() {
       <div className="home-hero-stack">
         <div className="home-hero-stack-back" aria-hidden="true" />
         <div className="home-hero-stack-middle" aria-hidden="true" />
-        <SurfaceCard className="home-hero-card p-6">
+          <SurfaceCard className="home-hero-card p-4 sm:p-6">
           <span className="home-brand-tag">BACHELOR POINT</span>
           <h2 className="home-hero-heading mt-4 max-w-sm font-extrabold tracking-tight">
             Together we manage, better we live.
           </h2>
           <div className="mt-5 grid grid-cols-2 gap-4 border-t border-white/15 pt-4">
             <div>
-              <p className="text-2xl font-extrabold tracking-tight">{FLAT_MEMBERS.length} Active</p>
+              <p className="text-xl font-extrabold tracking-tight sm:text-2xl">{FLAT_MEMBERS.length} Active</p>
               <p className="mt-0.5 text-xs text-white/65">Members</p>
             </div>
             <div className="text-right">
-              <p className="text-2xl font-extrabold tracking-tight">৳2,450 <span className="text-xs font-semibold text-white/65">/ month</span></p>
+              <p className="text-xl font-extrabold tracking-tight sm:text-2xl">৳2,450 <span className="text-xs font-semibold text-white/65">/ month</span></p>
               <p className="mt-0.5 text-xs text-white/65">Total shared</p>
             </div>
           </div>

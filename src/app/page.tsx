@@ -9,8 +9,8 @@ const highlights = ["Fair task turns", "Shared expenses", "Bills in one place"];
 
 function PublicHomePage() {
   return (
-    <main className="app-backdrop px-5 py-7 text-white sm:px-8 sm:py-10">
-      <div className="mx-auto flex min-h-[calc(100dvh-3.5rem)] w-full max-w-5xl flex-col">
+    <main className="app-backdrop px-4 py-5 text-white sm:px-8 sm:py-10">
+      <div className="mx-auto flex min-h-[calc(100dvh-2.5rem)] w-full max-w-5xl flex-col sm:min-h-[calc(100dvh-3.5rem)]">
         <header className="flex items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-3">
             <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#46F0D2] text-lg font-black text-[#131321]">B</span>
@@ -22,10 +22,10 @@ function PublicHomePage() {
           <Link href="/sign-in" className="rounded-full border border-white/15 px-4 py-2.5 text-sm font-semibold text-white">Sign in</Link>
         </header>
 
-        <div className="grid flex-1 items-center gap-10 py-12 lg:grid-cols-2 lg:gap-16">
+        <div className="grid flex-1 items-center gap-8 py-8 sm:gap-10 sm:py-12 lg:grid-cols-2 lg:gap-16">
           <section>
             <Pill tone="gold">Made for shared living</Pill>
-            <h1 className="mt-5 max-w-xl text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl">One home.<br /><span className="gradient-text">Everyone in sync.</span></h1>
+            <h1 className="mt-5 max-w-xl text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl">One home.<br /><span className="gradient-text">Everyone in sync.</span></h1>
             <p className="mt-5 max-w-lg text-base leading-7 text-white/70">Keep chores fair, shared costs clear, and your whole flat on the same page—without the group-chat confusion.</p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
               <Link href="/sign-up" className="rounded-full bg-[#46F0D2] px-6 py-3.5 text-center text-sm font-bold text-[#131321]">Get started <span aria-hidden="true">→</span></Link>
@@ -36,7 +36,7 @@ function PublicHomePage() {
             </div>
           </section>
 
-          <SurfaceCard className="mx-auto w-full max-w-md p-5 sm:p-6">
+          <SurfaceCard className="mx-auto w-full max-w-md p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div><p className="text-xs font-semibold text-[#131321]/55">BACHELOR POINT</p><h2 className="mt-1 text-lg font-bold">Today at a glance</h2></div>
               <Pill tone="gold">Flat 3B</Pill>
