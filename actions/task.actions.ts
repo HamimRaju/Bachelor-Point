@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { getCurrentMember } from "@/lib/current-member";
 import { getTaskRotationViews, updateTaskRotation } from "@/lib/task-store";
 import type { TaskAction, TaskRotationView } from "@/lib/task-rotation";
@@ -30,10 +29,6 @@ async function performTaskAction(
 ) {
     const member = await requireMember();
     const result = await updateTaskRotation(taskKey, cycleId, member, action);
-
-    revalidatePath("/tasks");
-    revalidatePath("/tasks/detail");
-    revalidatePath("/dashboard");
 
     return result;
 }
