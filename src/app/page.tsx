@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
+import BrandLogo from "@/components/BrandLogo";
 import BottomNav from "@/components/BottomNav";
 import DashboardPage from "./(dashboard)/dashboard/page";
 import { getCurrentMember } from "@/lib/current-member";
@@ -22,11 +23,7 @@ function PublicHomePage() {
       <div className="public-home-shell">
         <header className="public-app-bar">
           <Link href="/" className="public-brand" aria-label="Bachelor Point home">
-            <span className="public-brand-mark" aria-hidden="true">BP</span>
-            <span>
-              <span className="public-brand-name">Bachelor Point</span>
-              <span className="public-brand-caption">SHARED LIVING, IN SYNC</span>
-            </span>
+            <BrandLogo showTagline />
           </Link>
           <Link href="/sign-in" className="public-signin">
             Sign in <span aria-hidden="true">↗</span>

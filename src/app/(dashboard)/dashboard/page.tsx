@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { completeTask, getTaskRotations } from "@/actions/task.actions";
 import { PageFrame, SurfaceCard } from "@/components/ui";
+import BrandLogo from "@/components/BrandLogo";
 import OutstandingExpenseSummary from "@/components/OutstandingExpenseSummary";
 import { FLAT_MEMBERS } from "@/lib/members";
 import { mergeTaskRotationViews } from "@/lib/task-view";
@@ -149,7 +150,7 @@ export default function DashboardPage() {
         <div className="home-hero-stack-back" aria-hidden="true" />
         <div className="home-hero-stack-middle" aria-hidden="true" />
           <SurfaceCard className="home-hero-card p-4 sm:p-6">
-          <span className="home-brand-tag">BACHELOR POINT</span>
+          <BrandLogo className="home-brand-lockup" />
           <h2 className="home-hero-heading mt-4 max-w-sm font-extrabold tracking-tight">
             Together we manage, better we live.
           </h2>

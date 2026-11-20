@@ -81,6 +81,58 @@ select:focus {
   color: var(--obsidian);
 }
 
+.brand-lockup {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.brand-logo-mark {
+  display: grid;
+  width: 2.8rem;
+  height: 2.8rem;
+  flex: none;
+  place-items: center;
+  border: 1px solid rgb(199 255 244 / 75%);
+  border-radius: 1rem;
+  background: linear-gradient(145deg, #8bf2d4 0%, #58d9c2 58%, #6cc8e5 100%);
+  color: #103936;
+  box-shadow:
+    0 7px 18px rgb(41 215 180 / 19%),
+    inset 0 1px 0 rgb(255 255 255 / 80%);
+}
+
+.brand-logo-mark svg {
+  display: block;
+  width: 72%;
+  height: 72%;
+}
+
+.brand-wordmark {
+  display: block;
+  min-width: 0;
+}
+
+.brand-wordmark-name {
+  display: block;
+  color: inherit;
+  font-family: var(--font-space-grotesk), sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.015em;
+  line-height: 1.2;
+}
+
+.brand-wordmark-tagline {
+  display: block;
+  margin-top: 0.2rem;
+  color: rgb(238 255 250 / 51%);
+  font-size: 0.55rem;
+  font-weight: 750;
+  letter-spacing: 0.16em;
+}
+
 .app-backdrop {
   min-height: 100dvh;
   background: transparent;
@@ -541,18 +593,28 @@ select:focus {
   line-height: 1.12;
 }
 
-.home-brand-tag {
+.home-brand-lockup {
   display: inline-flex;
   align-items: center;
   border: 1px solid rgb(255 255 255 / 19%);
   border-radius: 9999px;
   background: rgb(255 255 255 / 12%);
-  padding: 0.48rem 0.9rem;
+  gap: 0.45rem;
+  padding: 0.25rem 0.65rem 0.25rem 0.28rem;
   color: rgb(244 255 251 / 86%);
-  font-size: 0.7rem;
+}
+
+.home-brand-lockup .brand-logo-mark {
+  width: 1.65rem;
+  height: 1.65rem;
+  border-radius: 0.55rem;
+}
+
+.home-brand-lockup .brand-wordmark-name {
+  font-size: 0.6rem;
   font-weight: 800;
   letter-spacing: 0.1em;
-  font-family: var(--font-space-grotesk), sans-serif;
+  text-transform: uppercase;
 }
 
 .home-summary-grid {
@@ -919,41 +981,8 @@ button.home-task-check:hover:not(:disabled) {
   animation: public-enter 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
-.public-brand-mark {
-  display: grid;
-  width: 2.8rem;
-  height: 2.8rem;
-  flex: none;
-  place-items: center;
-  border: 1px solid rgb(199 255 244 / 75%);
-  border-radius: 1rem;
-  background: linear-gradient(145deg, #8bf2d4 0%, #58d9c2 58%, #6cc8e5 100%);
-  color: #103936;
-  font-family: var(--font-space-grotesk), sans-serif;
-  font-size: 0.84rem;
-  font-weight: 800;
-  letter-spacing: -0.08em;
-  box-shadow:
-    0 7px 18px rgb(41 215 180 / 19%),
-    inset 0 1px 0 rgb(255 255 255 / 80%);
-}
-
-.public-brand-name {
-  display: block;
-  font-family: var(--font-space-grotesk), sans-serif;
+.public-brand .brand-wordmark-name {
   font-size: 0.9rem;
-  font-weight: 700;
-  letter-spacing: 0.015em;
-  line-height: 1.2;
-}
-
-.public-brand-caption {
-  display: block;
-  margin-top: 0.2rem;
-  color: rgb(238 255 250 / 51%);
-  font-size: 0.55rem;
-  font-weight: 750;
-  letter-spacing: 0.16em;
 }
 
 .public-signin {
@@ -1588,34 +1617,21 @@ button.home-task-check:hover:not(:disabled) {
   color: #f4fffc;
 }
 
-.auth-brand-mark {
-  display: grid;
+.auth-brand .brand-logo-mark {
   width: 3rem;
   height: 3rem;
-  place-items: center;
-  border: 1px solid rgb(191 255 239 / 68%);
   border-radius: 1rem;
-  background: linear-gradient(145deg, #77f0ca, #47cdbb 62%, #55bad0);
-  color: #0c3936;
-  font-family: var(--font-space-grotesk), sans-serif;
-  font-size: 0.9rem;
-  font-weight: 800;
-  letter-spacing: -0.08em;
+  border-color: rgb(191 255 239 / 68%);
   box-shadow: 0 8px 20px rgb(47 218 181 / 20%), inset 0 1px 0 rgb(255 255 255 / 70%);
 }
 
-.auth-brand-name {
-  display: block;
-  font-family: var(--font-space-grotesk), sans-serif;
+.auth-brand .brand-wordmark-name {
   font-size: 0.92rem;
-  font-weight: 700;
   letter-spacing: 0.105em;
-  line-height: 1.2;
   text-transform: uppercase;
 }
 
-.auth-brand-tagline {
-  display: block;
+.auth-brand .brand-wordmark-tagline {
   margin-top: 0.25rem;
   color: rgb(235 255 249 / 57%);
   font-size: 0.58rem;
