@@ -8,6 +8,7 @@ import {
 } from "@/actions/expense.actions";
 import { PillButton, SurfaceCard } from "@/components/ui";
 import type { ExpenseView } from "@/lib/expense-view";
+import { banglaError, formatBnNumber, translateMemberName } from "@/lib/bn";
 
 export default function OutstandingExpenseSummary({
   onExpensesLoaded,
@@ -71,12 +72,12 @@ export default function OutstandingExpenseSummary({
       );
       setNotice(
         result.alreadyPaid
-          ? "This payment is already recorded."
-          : "Your payment has been recorded.",
+          ? "এই পরিশোধের তথ্য আগেই নথিভুক্ত হয়েছে।"
+          : "আপনার পরিশোধের তথ্য নথিভুক্ত হয়েছে।",
       );
     } catch (error) {
       setNotice(
-        error instanceof Error ? error.message : "Could not record your payment.",
+        banglaError(error, "আপনার পরিশোধের তথ্য নথিভুক্ত করা যায়নি।"),
       );
     } finally {
       setSettlingId(null);
@@ -87,14 +88,14 @@ export default function OutstandingExpenseSummary({
     <SurfaceCard className="home-expense-debt p-4 sm:p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="home-card-eyebrow">YOUR OUTSTANDING SHARES</h2>
+          <h2 className="home-card-eyebrow">আপনার বাকি থাকা অংশ</h2>
           <p className="mt-1 text-xs text-white/60">
-            Total to repay:{" "}
-            <strong className="text-white">৳{totalOwed.toLocaleString()}</strong>
+            মোট বাকি:{" "}
+            <strong className="text-white">৳{formatBnNumber(totalOwed)}</strong>
           </p>
         </div>
         <Link href="/expenses?view=splits" className="home-text-link">
-          All dues <span aria-hidden="true">›</span>
+          সব বাকি <span aria-hidden="true">›</span>
         </Link>
       </div>
 
@@ -107,11 +108,11 @@ export default function OutstandingExpenseSummary({
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-bold">{expense.title}</p>
               <p className="mt-0.5 text-xs text-white/65">
-                You owe{" "}
+                আপনাকে দিতে হবে{" "}
                 <strong className="text-[#a5f3d6]">
-                  ৳{share.amount.toLocaleString()}
+                  ৳{formatBnNumber(share.amount)}
                 </strong>{" "}
-                to {expense.paidByName}
+                {translateMemberName(expense.paidByName)}-কে
               </p>
             </div>
             <PillButton
@@ -120,15 +121,14 @@ export default function OutstandingExpenseSummary({
               disabled={Boolean(settlingId)}
               className="shrink-0 px-3 py-2"
             >
-              {settlingId === expense.id ? "Saving…" : "Mark paid"}
+              {settlingId === expense.id ? "সংরক্ষণ হচ্ছে…" : "পরিশোধিত চিহ্নিত করুন"}
             </PillButton>
           </div>
         ))}
       </div>
       {debts.length > 3 && (
         <p className="mt-3 text-[11px] text-white/55">
-          And {debts.length - 3} more outstanding share
-          {debts.length - 3 === 1 ? "" : "s"}.
+          আরও {formatBnNumber(debts.length - 3)}টি বাকি খরচ আছে।
         </p>
       )}
       {notice && (

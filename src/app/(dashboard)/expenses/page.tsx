@@ -20,6 +20,12 @@ import {
 } from "@/components/ui";
 import { FLAT_MEMBERS as MEMBER_RECORDS } from "@/lib/members";
 import type { ExpenseView } from "@/lib/expense-view";
+import {
+  banglaError,
+  formatBnDate,
+  formatBnNumber,
+  translateMemberName,
+} from "@/lib/bn";
 
 type TabKey = "fixed" | "splits" | "breakdown";
 type MemberName = (typeof MEMBER_RECORDS)[number]["name"];
@@ -41,39 +47,35 @@ const FLAT_MEMBERS = MEMBER_RECORDS;
 const FIXED_BILL_CONFIG: FixedBillConfig[] = [
   {
     id: "wifi",
-    title: "WiFi Bill",
+    title: "ওয়াই-ফাই বিল",
     totalAmount: 750,
     perPerson: 150,
-    due: "20 Oct 2026",
+    due: "২০ অক্টোবর ২০২৬",
   },
   {
     id: "moyla",
-    title: "Moyla Bill",
+    title: "ময়লা বিল",
     totalAmount: 150,
     perPerson: 30,
-    due: "15 Oct 2026",
+    due: "১৫ অক্টোবর ২০২৬",
   },
   {
     id: "rent",
-    title: "Basha Vara",
+    title: "বাসা ভাড়া",
     totalAmount: 15000,
     perPerson: null,
-    due: "01 Nov 2026",
+    due: "১ নভেম্বর ২০২৬",
     customAmounts: { Raju: 3200, Rubel: 3000, Arefin: 3000, Real: 2900, Radin: 2900 },
   },
 ];
 const tabs: Array<{ key: TabKey; label: string }> = [
-  { key: "fixed", label: "Bills" },
-  { key: "splits", label: "Expenses" },
-  { key: "breakdown", label: "Balances" },
+  { key: "fixed", label: "বিল" },
+  { key: "splits", label: "খরচ" },
+  { key: "breakdown", label: "হিসাব" },
 ];
 
 function formatDate(date: string) {
-  return new Date(date).toLocaleDateString(undefined, {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+  return formatBnDate(date);
 }
 
 export default function ExpensesPage() {
@@ -138,7 +140,7 @@ export default function ExpensesPage() {
       } catch (error) {
         if (mounted) {
           setExpensesError(
-            error instanceof Error ? error.message : "Unable to load shared expenses.",
+            banglaError(error, "সবার খরচের তালিকা লোড করা যায়নি।"),
           );
         }
       } finally {
@@ -189,7 +191,7 @@ export default function ExpensesPage() {
       } catch (error) {
         if (mounted) {
           setBillsError(
-            error instanceof Error ? error.message : "Unable to load monthly bills.",
+            banglaError(error, "মাসিক বিলের তালিকা লোড করা যায়নি।"),
           );
         }
       } finally {
@@ -229,12 +231,12 @@ export default function ExpensesPage() {
       );
       showToast(
         result.alreadyPaid
-          ? "Your payment is already recorded."
-          : "Your payment is recorded and shared with the flat.",
+          ? "আপনার পরিশোধের তথ্য আগেই নথিভুক্ত হয়েছে।"
+          : "আপনার পরিশোধের তথ্য নথিভুক্ত হয়েছে এবং ফ্ল্যাটের সবার সঙ্গে শেয়ার করা হয়েছে।",
       );
     } catch (error) {
       showToast(
-        error instanceof Error ? error.message : "Could not record your payment.",
+        banglaError(error, "আপনার পরিশোধের তথ্য নথিভুক্ত করা যায়নি।"),
       );
     } finally {
       setSettlingBillId(null);
@@ -252,12 +254,12 @@ export default function ExpensesPage() {
       );
       showToast(
         result.alreadyPaid
-          ? "This payment is already recorded."
-          : "Your payment has been recorded.",
+          ? "এই পরিশোধের তথ্য আগেই নথিভুক্ত হয়েছে।"
+          : "আপনার পরিশোধের তথ্য নথিভুক্ত হয়েছে।",
       );
     } catch (error) {
       showToast(
-        error instanceof Error ? error.message : "Could not record the payment.",
+        banglaError(error, "পরিশোধের তথ্য নথিভুক্ত করা যায়নি।"),
       );
     } finally {
       setSettlingExpenseId(null);
@@ -272,7 +274,7 @@ export default function ExpensesPage() {
     const amount = Number(expenseAmount);
 
     if (!title || !Number.isSafeInteger(amount) || amount <= 0) {
-      showToast("Enter an expense name and a valid whole amount.");
+      showToast("খরচের নাম ও সঠিক পূর্ণ সংখ্যার পরিমাণ লিখুন।");
       return;
     }
 
@@ -292,10 +294,10 @@ export default function ExpensesPage() {
       setIsAddExpenseOpen(false);
       setExpenseTitle("");
       setExpenseAmount("");
-      showToast("Expense saved and split between all five flatmates.");
+      showToast("খরচটি সংরক্ষিত হয়েছে এবং ফ্ল্যাটের পাঁচজনের মধ্যে ভাগ করা হয়েছে।");
     } catch (error) {
       showToast(
-        error instanceof Error ? error.message : "Could not save this expense.",
+        banglaError(error, "খরচটি সংরক্ষণ করা যায়নি।"),
       );
     } finally {
       setIsSavingExpense(false);
@@ -315,9 +317,9 @@ export default function ExpensesPage() {
 
       <header className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="mt-1 text-2xl font-bold tracking-tight">Expenses</h1>
+          <h1 className="mt-1 text-2xl font-bold tracking-tight">খরচ ও বিল</h1>
           <p className="mt-1 text-sm text-white/65">
-            Bills, shared spending and repayments
+            বিল, সবার খরচ ও পরিশোধের হিসাব
           </p>
         </div>
         <PillButton
@@ -325,28 +327,28 @@ export default function ExpensesPage() {
           onClick={() => setIsAddExpenseOpen(true)}
           className="shrink-0"
         >
-          <span className="text-base leading-none">+</span> Add expense
+          <span className="text-base leading-none">+</span> খরচ যোগ করুন
         </PillButton>
       </header>
 
       <SurfaceCard className="grid grid-cols-2 gap-3 p-4 sm:p-5">
         <div className="min-w-0">
-          <p className="text-xs text-white/65">Shared expenses recorded</p>
+          <p className="text-xs text-white/65">নথিভুক্ত সবার মোট খরচ</p>
           <p className="mt-1 text-2xl font-bold tracking-tight">
-            ৳{totalSharedAmount.toLocaleString()}
+            ৳{formatBnNumber(totalSharedAmount)}
           </p>
         </div>
         <div className="min-w-0 border-l border-white/10 pl-3">
-          <p className="text-xs text-white/65">You still owe</p>
+          <p className="text-xs text-white/65">আপনার বাকি পরিশোধ</p>
           <p className="mt-1 text-2xl font-bold tracking-tight">
-            ৳{totalOwed.toLocaleString()}
+            ৳{formatBnNumber(totalOwed)}
           </p>
         </div>
       </SurfaceCard>
 
       <div
         role="tablist"
-        aria-label="Expense views"
+        aria-label="খরচের বিভিন্ন হিসাব"
         className="flex gap-1 rounded-full border border-white/10 bg-white/10 p-1"
       >
         {tabs.map((tab) => (
@@ -370,11 +372,11 @@ export default function ExpensesPage() {
       {activeTab === "fixed" && (
         <section className="space-y-3">
           <h2 className="text-sm font-semibold text-white">
-            Fixed monthly bills
+            নির্ধারিত মাসিক বিল
           </h2>
           {isLoadingBills && bills.length === 0 ? (
             <SurfaceCard className="p-5 text-sm text-white/70">
-              Loading monthly bills…
+              মাসিক বিল লোড হচ্ছে…
             </SurfaceCard>
           ) : billsError && bills.length === 0 ? (
             <SurfaceCard className="p-5 text-sm text-white/70">
@@ -382,7 +384,7 @@ export default function ExpensesPage() {
             </SurfaceCard>
           ) : bills.length === 0 ? (
             <SurfaceCard className="p-5 text-sm text-white/70">
-              No monthly bills have been added yet.
+              এখনো কোনো মাসিক বিল যোগ করা হয়নি।
             </SurfaceCard>
           ) : (
             bills.map((bill) => {
@@ -399,11 +401,11 @@ export default function ExpensesPage() {
                       <div>
                         <h2 className="text-sm font-bold">{bill.title}</h2>
                         <p className="mt-1 text-xs text-white/60">
-                          Due {bill.due}
+                          জমা দেওয়ার তারিখ: {bill.due}
                         </p>
                         <div
                           role="group"
-                          aria-label="Payment status by flatmate"
+                          aria-label="সদস্যভিত্তিক পরিশোধের অবস্থা"
                           className="mt-3 flex items-center -space-x-2"
                         >
                           {FLAT_MEMBERS.map((member) => {
@@ -412,30 +414,30 @@ export default function ExpensesPage() {
                             return (
                               <span
                                 key={member.id}
-                                title={`${member.name}: ${isMemberPaid ? "paid" : "pending"}`}
-                                aria-label={`${member.name}: ${isMemberPaid ? "paid" : "pending"}`}
+                                title={`${translateMemberName(member.name)}: ${isMemberPaid ? "পরিশোধিত" : "বাকি"}`}
+                                aria-label={`${translateMemberName(member.name)}: ${isMemberPaid ? "পরিশোধিত" : "বাকি"}`}
                                 className={`flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#17172d] text-xs font-bold text-white ${
                                   isMemberPaid ? "bg-[#10B981]" : "bg-slate-300"
                                 }`}
                               >
-                                {member.name.charAt(0).toUpperCase()}
+                                {translateMemberName(member.name).charAt(0)}
                               </span>
                             );
                           })}
                         </div>
                       </div>
                       <p className="shrink-0 text-sm font-bold">
-                        ৳{bill.totalAmount.toLocaleString()}
+                        ৳{formatBnNumber(bill.totalAmount)}
                       </p>
                     </div>
                     <p className="mt-2 text-xs text-white/60">
-                      Your share ৳{amount.toLocaleString()} ·{" "}
-                      {paidCount} paid · {pendingCount} pending
+                      আপনার অংশ ৳{formatBnNumber(amount)} ·{" "}
+                      {formatBnNumber(paidCount)} জন দিয়েছেন · {formatBnNumber(pendingCount)} জন বাকি
                     </p>
                   </div>
                   {isPaid ? (
                     <span className="text-xs font-semibold text-white/65">
-                      Paid ✓
+                      পরিশোধিত ✓
                     </span>
                   ) : (
                     <PillButton
@@ -444,7 +446,7 @@ export default function ExpensesPage() {
                       disabled={Boolean(settlingBillId)}
                       className="px-3 py-2"
                     >
-                      {settlingBillId === bill.id ? "Saving…" : "Pay"}
+                      {settlingBillId === bill.id ? "সংরক্ষণ হচ্ছে…" : "পরিশোধ করুন"}
                     </PillButton>
                   )}
                 </SurfaceCard>
@@ -457,12 +459,12 @@ export default function ExpensesPage() {
       {activeTab === "splits" && (
         <section className="space-y-3">
           <SectionHeading
-            title="Shared expenses"
-            subtitle="Your share and who you owe are shown on every expense."
+            title="সবার খরচ"
+            subtitle="প্রতিটি খরচে আপনার অংশ ও কাকে কত দিতে হবে তা দেখুন।"
           />
           {isLoadingExpenses ? (
             <SurfaceCard className="p-5 text-sm text-white/70">
-              Loading shared expenses…
+              সবার খরচের তালিকা লোড হচ্ছে…
             </SurfaceCard>
           ) : expensesError && expenses.length === 0 ? (
             <SurfaceCard className="p-5 text-sm text-white/70">
@@ -470,10 +472,9 @@ export default function ExpensesPage() {
             </SurfaceCard>
           ) : expenses.length === 0 ? (
             <SurfaceCard className="p-7 text-center">
-              <p className="text-sm font-bold">No shared expenses yet</p>
+              <p className="text-sm font-bold">এখনো কোনো খরচ যোগ করা হয়নি</p>
               <p className="mt-1 text-xs leading-5 text-white/60">
-                Add an expense paid by you and its five shares will appear here
-                for every flatmate.
+                আপনার দেওয়া কোনো খরচ যোগ করুন; পাঁচজনের ভাগ এখানে সবার জন্য দেখা যাবে।
               </p>
             </SurfaceCard>
           ) : (
@@ -494,11 +495,11 @@ export default function ExpensesPage() {
                         {expense.title}
                       </h2>
                       <p className="mt-1 text-xs text-white/60">
-                        Paid by {expense.paidByName} · {formatDate(expense.createdAt)}
+                        দিয়েছেন {translateMemberName(expense.paidByName)} · {formatDate(expense.createdAt)}
                       </p>
                       <div
                         role="group"
-                        aria-label="Payment status by flatmate"
+                        aria-label="সদস্যভিত্তিক পরিশোধের অবস্থা"
                         className="mt-3 flex items-center -space-x-2"
                       >
                         {expense.splitBetween.map((share) => {
@@ -507,20 +508,20 @@ export default function ExpensesPage() {
                           return (
                             <span
                               key={share.memberId}
-                              title={`${share.memberName}: ${isPaid ? "paid" : "pending"}`}
-                              aria-label={`${share.memberName}: ${isPaid ? "paid" : "pending"}`}
+                              title={`${translateMemberName(share.memberName)}: ${isPaid ? "পরিশোধিত" : "বাকি"}`}
+                              aria-label={`${translateMemberName(share.memberName)}: ${isPaid ? "পরিশোধিত" : "বাকি"}`}
                               className={`flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#17172d] text-xs font-bold text-white ${
                                 isPaid ? "bg-[#10B981]" : "bg-slate-300"
                               }`}
                             >
-                              {share.memberName.charAt(0).toUpperCase()}
+                              {translateMemberName(share.memberName).charAt(0)}
                             </span>
                           );
                         })}
                       </div>
                     </div>
                     <p className="shrink-0 text-base font-bold">
-                      ৳{expense.totalAmount.toLocaleString()}
+                  ৳{formatBnNumber(expense.totalAmount)}
                     </p>
                   </div>
 
@@ -528,28 +529,27 @@ export default function ExpensesPage() {
                     <div>
                       {myShare?.status === "Pending" ? (
                         <p className="text-sm font-semibold text-[#9af0d1]">
-                          You owe ৳{myShare.amount.toLocaleString()} to{" "}
-                          {expense.paidByName}
+                          আপনাকে {translateMemberName(expense.paidByName)}-কে ৳{formatBnNumber(myShare.amount)} দিতে হবে
                         </p>
                       ) : myShare ? (
                         <p className="text-sm font-semibold text-white/85">
-                          Your ৳{myShare.amount.toLocaleString()} share is paid
+                          আপনার ৳{formatBnNumber(myShare.amount)}-এর অংশ পরিশোধিত
                         </p>
                       ) : (
                         <p className="text-sm font-semibold text-white/65">
-                          Your share is loading…
+                          আপনার অংশের হিসাব লোড হচ্ছে…
                         </p>
                       )}
                       {myShare?.status === "Paid" && myShare.paidAt && (
                         <p className="mt-1 text-[11px] text-white/55">
-                          Recorded {formatDate(myShare.paidAt)}
+                          নথিভুক্ত হয়েছে {formatDate(myShare.paidAt)}
                         </p>
                       )}
                       <Pill
                         tone={paidCount === FLAT_MEMBERS.length ? "cyan" : "gold"}
                         className="mt-2 px-2 py-0.5 text-[10px]"
                       >
-                        {paidCount}/{FLAT_MEMBERS.length} paid
+                        {formatBnNumber(paidCount)}/{formatBnNumber(FLAT_MEMBERS.length)} জন পরিশোধ করেছেন
                       </Pill>
                     </div>
                     <div className="flex items-center gap-3">
@@ -560,7 +560,7 @@ export default function ExpensesPage() {
                           disabled={Boolean(settlingExpenseId)}
                           className="px-3 py-2"
                         >
-                          {isSettling ? "Saving…" : "Mark paid"}
+                          {isSettling ? "সংরক্ষণ হচ্ছে…" : "পরিশোধিত চিহ্নিত করুন"}
                         </PillButton>
                       )}
                       <button
@@ -571,7 +571,7 @@ export default function ExpensesPage() {
                         }}
                         className="text-xs font-bold underline underline-offset-2"
                       >
-                        Balances
+                        বিস্তারিত হিসাব
                       </button>
                     </div>
                   </div>
@@ -585,14 +585,14 @@ export default function ExpensesPage() {
       {activeTab === "breakdown" && (
         <section className="space-y-3">
           <SectionHeading
-            title="Balances & splits"
-            subtitle="See who paid, each member’s share, and when it was recorded."
+            title="ভাগ ও পরিশোধের হিসাব"
+            subtitle="কে পরিশোধ করেছেন, কার ভাগ কত এবং কখন নথিভুক্ত হয়েছে দেখুন।"
           />
           {!selectedExpense ? (
             <SurfaceCard className="p-6 text-center">
-              <p className="text-sm font-bold">Choose a shared expense</p>
+              <p className="text-sm font-bold">একটি খরচ বেছে নিন</p>
               <p className="mt-1 text-xs text-white/60">
-                Payment records for each flatmate will appear here.
+                প্রত্যেক সদস্যের পরিশোধের তথ্য এখানে দেখা যাবে।
               </p>
               {expenses.length > 0 && (
                 <button
@@ -600,7 +600,7 @@ export default function ExpensesPage() {
                   onClick={() => setSelectedExpenseId(expenses[0].id)}
                   className="mt-4 rounded-full bg-[#46F0D2] px-4 py-2 text-xs font-bold"
                 >
-                  View latest split
+                  সর্বশেষ ভাগের হিসাব দেখুন
                 </button>
               )}
             </SurfaceCard>
@@ -608,17 +608,17 @@ export default function ExpensesPage() {
             <>
               <SurfaceCard className="p-5">
                 <p className="text-xs text-white/60">
-                  Paid by {selectedExpense.paidByName} ·{" "}
+                  দিয়েছেন {translateMemberName(selectedExpense.paidByName)} ·{" "}
                   {formatDate(selectedExpense.createdAt)}
                 </p>
                 <h2 className="mt-1 text-lg font-bold">
                   {selectedExpense.title}
                 </h2>
                 <p className="mt-2 text-2xl font-bold">
-                  ৳{selectedExpense.totalAmount.toLocaleString()}
+                  ৳{formatBnNumber(selectedExpense.totalAmount)}
                 </p>
                 <p className="mt-1 text-xs text-white/60">
-                  Split between {selectedExpense.splitBetween.length} flatmates
+                  {formatBnNumber(selectedExpense.splitBetween.length)} জনের মধ্যে ভাগ করা হয়েছে
                 </p>
               </SurfaceCard>
               <SurfaceCard className="divide-y divide-white/10 px-4">
@@ -631,20 +631,20 @@ export default function ExpensesPage() {
                     >
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-semibold">
-                          {share.memberName}
-                          {isYou ? " · You" : ""}
+                          {translateMemberName(share.memberName)}
+                          {isYou ? " · আপনি" : ""}
                         </p>
                         <p className="mt-0.5 text-[11px] text-white/60">
-                          Share ৳{share.amount.toLocaleString()}
+                          আপনার অংশ ৳{formatBnNumber(share.amount)}
                           {share.status === "Paid" && share.paidAt
-                            ? ` · paid ${formatDate(share.paidAt)}`
+                            ? ` · পরিশোধিত ${formatDate(share.paidAt)}`
                             : ""}
                         </p>
                       </div>
                       {share.status === "Paid" ? (
-                        <Pill tone="cyan">Paid ✓</Pill>
+                        <Pill tone="cyan">পরিশোধিত ✓</Pill>
                       ) : (
-                        <Pill tone="gold">Owes payer</Pill>
+                        <Pill tone="gold">দেওয়া বাকি</Pill>
                       )}
                     </div>
                   );
@@ -667,37 +667,36 @@ export default function ExpensesPage() {
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#28796d]">
-                  New shared cost
+                  নতুন সবার খরচ
                 </p>
-                <h2 className="mt-1 text-base font-bold">Add expense</h2>
+                <h2 className="mt-1 text-base font-bold">খরচ যোগ করুন</h2>
               </div>
               <button
                 type="button"
                 onClick={() => setIsAddExpenseOpen(false)}
-                aria-label="Close"
+                aria-label="বন্ধ করুন"
                 className="gradient-panel flex h-9 w-9 items-center justify-center rounded-full text-white"
               >
                 ×
               </button>
             </div>
             <p className="mt-2 text-xs leading-5 text-[#131321]/60">
-              The cost is split across all five flatmates. You’ll be recorded
-              as the person who paid.
+              খরচটি ফ্ল্যাটের পাঁচজনের মধ্যে ভাগ হবে। যিনি পরিশোধ করেছেন হিসেবে আপনার নাম নথিভুক্ত হবে।
             </p>
             <form onSubmit={handleAddExpenseSubmit} className="mt-4 space-y-3">
               <label className="block text-xs font-bold">
-                Expense name
+                খরচের নাম
                 <input
                   value={expenseTitle}
                   onChange={(event) => setExpenseTitle(event.target.value)}
                   required
                   maxLength={100}
-                  placeholder="e.g. Groceries"
+                  placeholder="যেমন: বাজার"
                   className="mt-1.5 w-full rounded-2xl border border-[#131321]/15 bg-white px-4 py-3 text-base text-[#131321] placeholder:text-[#131321]/45 sm:text-sm"
                 />
               </label>
               <label className="block text-xs font-bold">
-                Total amount (৳)
+                মোট পরিমাণ (৳)
                 <input
                   type="number"
                   min="1"
@@ -712,10 +711,10 @@ export default function ExpensesPage() {
               </label>
               <div className="rounded-2xl border border-[#131321]/10 bg-[#131321]/[0.035] px-3 py-2.5">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-[#131321]/50">
-                  Paid by
+                  পরিশোধ করেছেন
                 </p>
                 <p className="mt-0.5 text-sm font-bold text-[#131321]">
-                  {currentMember.name} · You
+                  {translateMemberName(currentMember.name)} · আপনি
                 </p>
               </div>
               <button
@@ -723,7 +722,7 @@ export default function ExpensesPage() {
                 disabled={isSavingExpense}
                 className="w-full rounded-full bg-[#46F0D2] py-3 text-sm font-bold text-[#131321] disabled:cursor-wait disabled:opacity-60"
               >
-                {isSavingExpense ? "Saving expense…" : "Save & split expense"}
+                {isSavingExpense ? "খরচ সংরক্ষণ হচ্ছে…" : "সংরক্ষণ করে ভাগ করুন"}
               </button>
             </form>
           </SurfaceCard>

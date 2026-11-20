@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Space_Grotesk } from "next/font/google";
+import { Geist, Noto_Sans_Bengali, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,17 +13,23 @@ const spaceGrotesk = Space_Grotesk({
   display: "swap",
 });
 
+const notoSansBengali = Noto_Sans_Bengali({
+  variable: "--font-noto-bengali",
+  subsets: ["bengali", "latin"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Bachelor Point",
   description:
-    "Manage shared household tasks, bills, and expenses with Bachelor Point.",
+    "ব্যাচেলর পয়েন্টে একসাথে ঘরের কাজ, বিল ও খরচের হিসাব রাখুন।",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
-      lang="en"
-      className={`${geistSans.variable} ${spaceGrotesk.variable} h-full antialiased`}
+      lang="bn"
+      className={`${geistSans.variable} ${spaceGrotesk.variable} ${notoSansBengali.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

@@ -7,6 +7,14 @@ import { FLAT_MEMBERS } from "@/lib/members";
 import { mergeTaskRotationViews } from "@/lib/task-view";
 import type { TaskRotationView } from "@/lib/task-rotation";
 import Image from "next/image";
+import {
+  banglaError,
+  formatBnDateTime,
+  formatBnNumber,
+  translateMemberName,
+  translateTaskCategory,
+  translateTaskTitle,
+} from "@/lib/bn";
 
 export default function TaskDetailPage() {
   const router = useRouter();
@@ -41,7 +49,7 @@ export default function TaskDetailPage() {
         setLoadError(null);
       } catch (error) {
         if (!mounted) return;
-        setLoadError(error instanceof Error ? error.message : "Unable to load tasks.");
+        setLoadError(banglaError(error, "কাজের তালিকা লোড করা যায়নি।"));
       } finally {
         if (mounted) setIsLoading(false);
       }
@@ -101,10 +109,10 @@ export default function TaskDetailPage() {
       );
       showToastMsg(
         result.cycleCompleted
-          ? `${currentTask.title} completed for everyone. A new cycle has started with Raju.`
+          ? `${translateTaskTitle(currentTask.key, currentTask.title)} সবার জন্য সম্পন্ন হয়েছে। রাজুকে নিয়ে নতুন পালা শুরু হয়েছে।`
           : action === "Completed"
-            ? `${currentPerson.name} completed ${currentTask.title}.`
-            : `${currentPerson.name}'s responsibility remains pending.`,
+            ? `${translateMemberName(currentPerson.name)} ${translateTaskTitle(currentTask.key, currentTask.title)} সম্পন্ন করেছেন।`
+            : `${translateMemberName(currentPerson.name)}-এর কাজটি এখনো বাকি আছে।`,
       );
     } catch (error) {
       try {
@@ -114,7 +122,7 @@ export default function TaskDetailPage() {
       } catch {
         // Keep the existing view if the refresh also fails.
       }
-      showToastMsg(error instanceof Error ? error.message : "The task could not be updated.");
+      showToastMsg(banglaError(error, "কাজটি হালনাগাদ করা যায়নি।"));
     } finally {
       setLoadingAction(null);
     }
@@ -124,7 +132,7 @@ export default function TaskDetailPage() {
     return (
       <main className="app-backdrop pb-12 pt-4 px-4 font-sans text-white">
         <div className="glass-surface mx-auto max-w-md rounded-2xl p-6 text-center text-sm text-[#131321]/60 shadow-none">
-          {isLoading ? "Loading task rotations…" : loadError ?? "No tasks are available."}
+          {isLoading ? "কাজের পালা লোড হচ্ছে…" : loadError ?? "এখনো কোনো কাজ যোগ করা হয়নি।"}
         </div>
       </main>
     );
@@ -150,16 +158,16 @@ export default function TaskDetailPage() {
           <div className="flex items-center gap-3">
             <button 
               type="button"
-              aria-label="Back to tasks"
+              aria-label="কাজের তালিকায় ফিরে যান"
               onClick={() => router.push("/tasks")}
               className="glass-surface w-9 h-9 rounded-full flex items-center justify-center text-[#131321]/75 shadow-none text-sm font-bold active:scale-95 transition"
             >
               ←
             </button>
-            <h1 className="text-base font-black text-white">Task Detail</h1>
+            <h1 className="text-base font-black text-white">কাজের বিস্তারিত</h1>
           </div>
           <span className="text-xs font-bold text-[#131321] bg-[#FBE2B4] px-3 py-1 rounded-full border border-[#FBE2B4]/30">
-            Task {activeTaskIndex + 1} of {tasksList.length}
+            {formatBnNumber(activeTaskIndex + 1)} / {formatBnNumber(tasksList.length)}টি কাজ
           </span>
         </div>
 
@@ -169,20 +177,20 @@ export default function TaskDetailPage() {
           {/* Left & Right Slider Arrows */}
           <button 
             type="button"
-            aria-label="Previous task"
+            aria-label="আগের কাজ"
             onClick={handlePrevTask}
             className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-[#131321]/[0.04] border border-[#131321]/10 flex items-center justify-center text-[#131321]/65 hover:bg-[#131321]/5 transition shadow-none font-bold"
-            title="Previous Task"
+            title="আগের কাজ"
           >
             ‹
           </button>
           
           <button 
             type="button"
-            aria-label="Next task"
+            aria-label="পরের কাজ"
             onClick={handleNextTask}
             className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-[#131321]/[0.04] border border-[#131321]/10 flex items-center justify-center text-[#131321]/65 hover:bg-[#131321]/5 transition shadow-none font-bold"
-            title="Next Task"
+            title="পরের কাজ"
           >
             ›
           </button>
@@ -196,24 +204,24 @@ export default function TaskDetailPage() {
 
           {/* Title & Subtitle */}
           <div>
-            <h2 className="text-lg font-black text-[#131321]">{currentTask.title}</h2>
-            <p className="text-xs font-medium text-[#131321]/55 mt-0.5">{currentTask.category} Category</p>
+            <h2 className="text-lg font-black text-[#131321]">{translateTaskTitle(currentTask.key, currentTask.title)}</h2>
+            <p className="text-xs font-medium text-[#131321]/55 mt-0.5">{translateTaskCategory(currentTask.category)}</p>
           </div>
 
           {/* Current Person In Charge Box */}
           <div className="w-full bg-gradient-to-br from-[#46F0D2]/20 to-[#8C8AFF]/15 rounded-2xl p-3.5 border border-[#46F0D2]/30 flex flex-col items-center justify-center">
             <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#131321] mb-2">
-              CURRENT PERSON IN CHARGE
+              বর্তমানে দায়িত্বে আছেন
             </span>
             <div className="flex items-center gap-2">
               <Image
                 src={currentPerson.image}
-                alt={currentPerson.name}
+                alt={translateMemberName(currentPerson.name)}
                 width={28}
                 height={28}
                 className="w-7 h-7 rounded-full object-cover border-2 border-[#46F0D2]"
               />
-              <span className="text-sm font-black text-[#131321]">{currentPerson.name}</span>
+              <span className="text-sm font-black text-[#131321]">{translateMemberName(currentPerson.name)}</span>
             </div>
           </div>
 
@@ -225,17 +233,17 @@ export default function TaskDetailPage() {
               className="w-full py-3.5 bg-[#46F0D2] text-[#131321] font-extrabold text-xs rounded-2xl transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
             >
               {loadingAction === "Completed"
-                ? "Updating..."
+                ? "হালনাগাদ হচ্ছে…"
                 : isMyTurn
-                  ? "Mark as Done & Rotate Turn"
-                  : `Locked (${currentPerson.name}'s Turn)`}
+                  ? "সম্পন্ন চিহ্নিত করে পালা দিন"
+                  : `শুধু ${translateMemberName(currentPerson.name)}-এর পালা`}
             </button>
             <button
               onClick={() => void handleTaskAction("Skipped")}
               disabled={!isMyTurn || loadingAction !== null}
               className="w-full py-2.5 bg-[#131321]/5 hover:bg-[#131321]/10 text-[#131321]/75 font-bold text-xs rounded-2xl border border-[#131321]/10 transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
             >
-              {loadingAction === "Skipped" ? "Updating..." : "Skip Turn"}
+              {loadingAction === "Skipped" ? "হালনাগাদ হচ্ছে…" : "পালা এড়িয়ে যান"}
             </button>
           </div>
 
@@ -243,7 +251,7 @@ export default function TaskDetailPage() {
 
         {/* Rotation Order Section Card with Tick Mark on Completed Members */}
         <div className="glass-surface space-y-3 rounded-[28px] p-4 shadow-none sm:p-5">
-          <h3 className="text-xs font-bold text-[#131321] uppercase tracking-wider">Rotation Order</h3>
+          <h3 className="text-xs font-bold text-[#131321] uppercase tracking-wider">কাজের পালার ক্রম</h3>
           
           <div className="flex items-center justify-between overflow-x-auto py-2 px-1">
             {currentTask.responsibilities.map((responsibility, index) => {
@@ -259,7 +267,7 @@ export default function TaskDetailPage() {
                       }`}>
                         <Image
                           src={member.image}
-                          alt={member.name}
+                          alt={translateMemberName(member.name)}
                           width={40}
                           height={40}
                           className="w-full h-full object-cover rounded-full"
@@ -273,12 +281,12 @@ export default function TaskDetailPage() {
                       )}
                       {responsibility.status === "Skipped" && (
                         <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#FBE2B4] text-[#131321] text-[8px] font-black rounded-full flex items-center justify-center border border-white shadow-none">
-                          Skip
+                          বাদ
                         </span>
                       )}
                     </div>
                     <span className={`text-[10px] font-bold mt-1.5 ${isCurrent ? "text-[#131321]" : "text-[#131321]/60"}`}>
-                      {member.name}
+                      {translateMemberName(member.name)}
                     </span>
                   </div>
                   {index < currentTask.responsibilities.length - 1 && (
@@ -292,7 +300,7 @@ export default function TaskDetailPage() {
 
         {/* Completion History Section Card */}
         <div className="glass-surface space-y-3 rounded-[28px] p-4 shadow-none sm:p-5">
-          <h3 className="text-xs font-bold text-[#131321] uppercase tracking-wider">Completion History</h3>
+          <h3 className="text-xs font-bold text-[#131321] uppercase tracking-wider">কাজের ইতিহাস</h3>
           
           <div className="space-y-2">
             {currentTask.history.map((item) => (
@@ -300,11 +308,11 @@ export default function TaskDetailPage() {
                 <div className="flex items-center gap-2">
                   <span className={`w-2 h-2 rounded-full ${item.action === "Completed" ? "bg-[#46F0D2]" : "bg-[#FBE2B4]"}`} />
                   <span className="font-semibold text-[#131321]/75">
-                    <strong className="text-[#131321]">{item.name}</strong>{" "}
-                    {item.action === "Completed" ? "completed" : "skipped"}
+                    <strong className="text-[#131321]">{translateMemberName(item.name)}</strong>{" "}
+                    {item.action === "Completed" ? "সম্পন্ন করেছেন" : "পালা এড়িয়ে গেছেন"}
                   </span>
                 </div>
-                <span className="text-[10px] font-medium text-[#131321]/55">{new Date(item.occurredAt).toLocaleString()}</span>
+                <span className="text-[10px] font-medium text-[#131321]/55">{formatBnDateTime(item.occurredAt)}</span>
               </div>
             ))}
           </div>

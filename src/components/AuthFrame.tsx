@@ -6,12 +6,12 @@ export default function AuthFrame({ children }: { children: ReactNode }) {
   return (
     <main className="auth-page">
       <div className="auth-shell">
-        <Link href="/" className="auth-brand" aria-label="Bachelor Point home">
+        <Link href="/" className="auth-brand" aria-label="ব্যাচেলর পয়েন্টের মূল পাতা">
           <BrandLogo showTagline />
         </Link>
         {children}
         <p className="auth-footnote">
-          A simpler way to look after your shared home.
+          একসাথে থাকা ও ঘর সামলানোর সহজ উপায়।
         </p>
       </div>
     </main>

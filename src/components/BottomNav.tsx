@@ -5,11 +5,11 @@ import { Suspense } from "react";
 import { usePathname } from "next/navigation";
 
 const navItems = [
-  { name: "Home", href: "/", icon: "home" },
-  { name: "Tasks", href: "/tasks", icon: "tasks" },
-  { name: "Expenses", href: "/expenses", icon: "expenses" },
-  { name: "Members", href: "/members", icon: "members" },
-  { name: "More", href: "/more", icon: "more" },
+  { name: "হোম", href: "/", icon: "home" },
+  { name: "কাজ", href: "/tasks", icon: "tasks" },
+  { name: "খরচ", href: "/expenses", icon: "expenses" },
+  { name: "সদস্য", href: "/members", icon: "members" },
+  { name: "আরও", href: "/more", icon: "more" },
 ] as const;
 
 type NavIconName = (typeof navItems)[number]["icon"];
@@ -73,16 +73,16 @@ function BottomNavContent() {
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex justify-center px-3 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] sm:px-4">
       <nav
-        aria-label="Main navigation"
+        aria-label="প্রধান নেভিগেশন"
         className="glass-nav w-full max-w-[34rem] rounded-3xl px-1 py-1.5"
       >
         <div className="flex items-stretch gap-0.5">
           {navItems.map((item) => {
             const isActive =
               pathname === item.href ||
-              (item.name === "Home" && pathname === "/dashboard") ||
-              (item.name === "More" && pathname === "/profile") ||
-              (item.name === "Tasks" && pathname.startsWith("/tasks"));
+              (item.href === "/" && pathname === "/dashboard") ||
+              (item.href === "/more" && pathname === "/profile") ||
+              (item.href === "/tasks" && pathname.startsWith("/tasks"));
 
             return (
               <Link

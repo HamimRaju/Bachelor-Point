@@ -12,6 +12,12 @@ import { mergeTaskRotationViews } from "@/lib/task-view";
 import type { TaskRotationView } from "@/lib/task-rotation";
 import { authClient } from "@/lib/auth-client";
 import type { ExpenseView } from "@/lib/expense-view";
+import {
+  banglaError,
+  formatBnNumber,
+  translateMemberName,
+  translateTaskTitle,
+} from "@/lib/bn";
 
 const taskColors = ["mint", "teal", "gold", "mint", "gold"] as const;
 
@@ -43,7 +49,7 @@ export default function DashboardPage() {
   const currentMember = FLAT_MEMBERS.find(
     (member) => member.id === currentMemberId,
   );
-  const userName = currentMember?.name ?? session?.user?.name ?? "Flatmate";
+  const userName = currentMember?.name ?? session?.user?.name ?? "সদস্য";
   const userImage = currentMember?.image ?? session?.user?.image ?? "/Raju.jpg";
   const [tasks, setTasks] = useState<TaskRotationView[]>([]);
   const [loadingTaskKey, setLoadingTaskKey] = useState<string | null>(null);
@@ -100,9 +106,9 @@ export default function DashboardPage() {
       setTasks((current) => current.map((item) =>
         item.key === task.key && result.task.version >= item.version ? result.task : item,
       ));
-      showNotice(`${task.title} marked done.`);
+      showNotice(`${translateTaskTitle(task.key, task.title)} সম্পন্ন হয়েছে।`);
     } catch (error) {
-      showNotice(error instanceof Error ? error.message : "Could not update this task.");
+      showNotice(banglaError(error, "কাজটি হালনাগাদ করা যায়নি।"));
     } finally {
       setLoadingTaskKey(null);
     }
@@ -130,7 +136,7 @@ export default function DashboardPage() {
           <div className="home-avatar">
             <Image
               src={userImage}
-              alt={userName}
+               alt={translateMemberName(userName)}
               width={48}
               height={48}
               unoptimized={userImage.startsWith("http")}
@@ -140,16 +146,16 @@ export default function DashboardPage() {
           </div>
           <div className="min-w-0">
             <h1 className="flex items-center gap-1.5 truncate text-base font-bold tracking-tight">
-              {userName}
-              <span aria-label="Flat member" title="Flat member" className="text-amber-300">★</span>
+              {translateMemberName(userName)}
+              <span aria-label="ফ্ল্যাটের সদস্য" title="ফ্ল্যাটের সদস্য" className="text-amber-300">★</span>
             </h1>
-            <p className="truncate text-xs text-white/60">Flat Member · Block B &amp; House 16</p>
+            <p className="truncate text-xs text-white/60">ফ্ল্যাটের সদস্য · ব্লক বি, বাড়ি ১৬</p>
           </div>
         </div>
         <button
           type="button"
-          aria-label="Notifications"
-          onClick={() => showNotice("You're all caught up.")}
+          aria-label="বিজ্ঞপ্তি"
+          onClick={() => showNotice("নতুন কোনো বিজ্ঞপ্তি নেই।")}
           className="home-notification-button"
         >
           <BellIcon />
@@ -162,54 +168,54 @@ export default function DashboardPage() {
           <SurfaceCard className="home-hero-card p-4 sm:p-6">
           <BrandLogo className="home-brand-lockup" />
           <h2 className="home-hero-heading mt-4 max-w-sm font-extrabold tracking-tight">
-            Together we manage, better we live.
+            একসাথে গুছিয়ে চলি, ভালো থাকি।
           </h2>
           <div className="mt-5 grid grid-cols-2 gap-4 border-t border-white/15 pt-4">
             <div>
-              <p className="text-xl font-extrabold tracking-tight sm:text-2xl">{FLAT_MEMBERS.length} Active</p>
-              <p className="mt-0.5 text-xs text-white/65">Members</p>
+              <p className="text-xl font-extrabold tracking-tight sm:text-2xl">{formatBnNumber(FLAT_MEMBERS.length)} জন সক্রিয়</p>
+              <p className="mt-0.5 text-xs text-white/65">সদস্য</p>
             </div>
             <div className="text-right">
               <p className="text-xl font-extrabold tracking-tight sm:text-2xl">
                 {sharedExpensesTotal === null
-                  ? "Loading…"
-                  : `৳${sharedExpensesTotal.toLocaleString()}`}
+                  ? "লোড হচ্ছে…"
+                  : `৳${formatBnNumber(sharedExpensesTotal)}`}
               </p>
               <p className="mt-0.5 text-xs text-white/65">
-                Recorded shared expenses
+                নথিভুক্ত মোট খরচ
               </p>
             </div>
           </div>
         </SurfaceCard>
       </div>
 
-      <section className="home-summary-grid" aria-label="Task overview">
+        <section className="home-summary-grid" aria-label="কাজের সারসংক্ষেপ">
         <SurfaceCard className="home-progress-card p-4">
-          <h2 className="home-card-eyebrow">TODAY&apos;S ROTATION TASKS</h2>
+          <h2 className="home-card-eyebrow">আজকের পালাক্রমের কাজ</h2>
           <div
             className="home-progress-ring"
             role="img"
-            aria-label={`${completedCount} of ${totalTurns} rotation turns completed`}
+            aria-label={`${formatBnNumber(totalTurns)}টির মধ্যে ${formatBnNumber(completedCount)}টি কাজ সম্পন্ন`}
             style={{ background: ringProgress }}
           >
             <div className="home-progress-ring-inner">
-              <strong>{totalTurns ? `${completedCount}/${totalTurns}` : "—"}</strong>
-              <span>Completed<br />chores</span>
+              <strong>{totalTurns ? `${formatBnNumber(completedCount)}/${formatBnNumber(totalTurns)}` : "—"}</strong>
+              <span>সম্পন্ন<br />কাজ</span>
             </div>
           </div>
-          <p className="mt-3 text-center text-[11px] text-white/55">{progress}% this cycle</p>
+          <p className="mt-3 text-center text-[11px] text-white/55">এই পালায় {formatBnNumber(progress)}%</p>
         </SurfaceCard>
 
         <div className="home-summary-stack">
           <Link href="/tasks" className="home-summary-action home-view-action">
-            <span>View details <span aria-hidden="true">›</span></span>
-            <span className="home-action-subtitle">See all rotation tasks</span>
+            <span>বিস্তারিত দেখুন <span aria-hidden="true">›</span></span>
+            <span className="home-action-subtitle">পালাক্রমের সব কাজ দেখুন</span>
           </Link>
           <Link href="/tasks" className="home-summary-action home-turn-action">
-            <span className="home-card-eyebrow">YOUR TURN TODAY</span>
-            <strong>{hasLoadedTasks ? `${myTurnTasks.length} Items` : "Loading…"}</strong>
+            <span className="home-card-eyebrow">আজ আপনার পালা</span>
+            <strong>{hasLoadedTasks ? `${formatBnNumber(myTurnTasks.length)}টি কাজ` : "লোড হচ্ছে…"}</strong>
             <span className="home-action-subtitle">
-              {myTurnTasks.length === 1 ? "One task is waiting" : "Tasks assigned to you"}
+              {myTurnTasks.length === 1 ? "একটি কাজ বাকি আছে" : "আপনার জন্য বরাদ্দ করা কাজ"}
             </span>
           </Link>
         </div>
@@ -218,15 +224,15 @@ export default function DashboardPage() {
       <SurfaceCard className="home-rotation-card p-4 sm:p-5">
         <div className="mb-4 flex items-center justify-between gap-3">
           <div>
-            <h2 className="home-card-eyebrow">ROOMMATES ROTATION TODAY</h2>
-            <p className="mt-1 text-xs text-white/55">A fair turn for every flatmate</p>
+            <h2 className="home-card-eyebrow">আজকের কাজের পালা</h2>
+            <p className="mt-1 text-xs text-white/55">সবার জন্য সমান কাজের পালা</p>
           </div>
-          <Link href="/tasks" className="home-text-link">All tasks <span aria-hidden="true">›</span></Link>
+          <Link href="/tasks" className="home-text-link">সব কাজ <span aria-hidden="true">›</span></Link>
         </div>
 
         {tasks.length === 0 ? (
           <p className="rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-4 text-sm text-white/65">
-            {hasLoadedTasks ? "No rotation tasks are available yet." : "Loading your rotation…"}
+            {hasLoadedTasks ? "এখনো কোনো পালাক্রমের কাজ যোগ করা হয়নি।" : "কাজের তালিকা লোড হচ্ছে…"}
           </p>
         ) : (
           <div className="home-rotation-grid">
@@ -250,23 +256,23 @@ export default function DashboardPage() {
                       type="button"
                       onClick={() => void completeMyTurn(task)}
                       disabled={loadingTaskKey === task.key}
-                      aria-label={`Complete ${task.title}`}
+                      aria-label={`${translateTaskTitle(task.key, task.title)} সম্পন্ন করুন`}
                       className="home-task-check"
                     >
                       {loadingTaskKey === task.key ? "…" : "✓"}
                     </button>
                   ) : (
                     <span
-                      aria-label={isDone ? "Completed" : "Waiting"}
+                      aria-label={isDone ? "সম্পন্ন" : "অপেক্ষায়"}
                       className={`home-task-check ${isDone ? "is-complete" : "is-waiting"}`}
                     >
                       {isDone ? "✓" : "·"}
                     </span>
                   )}
                   <Link href={`/tasks/${task.key}`} className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-bold">{task.title}</span>
+                    <span className="block truncate text-sm font-bold">{translateTaskTitle(task.key, task.title)}</span>
                     <span className="mt-0.5 block truncate text-[11px] text-white/70">
-                      {assignedMember?.name ?? "Unassigned"}{isMyTurn ? " · Your turn" : ""}
+                      {assignedMember ? translateMemberName(assignedMember.name) : "বরাদ্দ নেই"}{isMyTurn ? " · আপনার পালা" : ""}
                     </span>
                   </Link>
                 </div>
@@ -283,19 +289,19 @@ export default function DashboardPage() {
       <SurfaceCard className="home-expense-card p-4 sm:p-5">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h2 className="home-card-eyebrow">PENDING SHARED EXPENSES</h2>
+            <h2 className="home-card-eyebrow">বাকি থাকা সবার খরচ</h2>
             <p className="mt-2 max-w-md text-xs leading-5 text-white/65">
-              Keep household spending clear and split shared costs with your roommates.
+              ঘরের খরচের স্বচ্ছ হিসাব রাখুন এবং সবার মধ্যে ভাগ করে নিন।
             </p>
           </div>
-          <Link href="/expenses" className="home-text-link shrink-0">Details <span aria-hidden="true">›</span></Link>
+          <Link href="/expenses" className="home-text-link shrink-0">বিস্তারিত <span aria-hidden="true">›</span></Link>
         </div>
         <div className="mt-4 grid grid-cols-2 gap-2.5">
           <Link href="/expenses?action=add" className="home-expense-action home-quick-split">
-            Quick-split
+            দ্রুত ভাগ করুন
           </Link>
           <Link href="/expenses?view=splits" className="home-expense-action home-expense-split">
-            Expense split
+            খরচ ভাগের হিসাব
           </Link>
         </div>
       </SurfaceCard>

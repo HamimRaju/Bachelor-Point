@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { SurfaceCard } from "@/components/ui";
 import AuthFrame from "@/components/AuthFrame";
+import { banglaError } from "@/lib/bn";
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
@@ -24,11 +25,11 @@ export default function SignInPage() {
         { email: email.trim().toLowerCase(), password, rememberMe: true, callbackURL: "/dashboard" },
         {
           onSuccess: () => router.push("/dashboard"),
-          onError: (context) => setError(context.error.message || "Sign in failed. Check your credentials."),
+          onError: (context) => setError(banglaError(context.error, "ইমেইল বা পাসওয়ার্ড সঠিক নয়। আবার চেষ্টা করুন।")),
         },
       );
     } catch (signInError) {
-      setError(signInError instanceof Error ? signInError.message : "Sign in failed. Check your credentials.");
+      setError(banglaError(signInError, "প্রবেশ করা যায়নি। আপনার তথ্য যাচাই করে আবার চেষ্টা করুন।"));
     } finally {
       setLoading(false);
     }
@@ -38,16 +39,16 @@ export default function SignInPage() {
     <AuthFrame>
       <SurfaceCard className="auth-card p-5 sm:p-7">
         <div className="auth-card-top">
-          <span className="auth-kicker">Member sign in</span>
-          <span className="auth-status">SECURE ACCESS</span>
+          <span className="auth-kicker">সদস্যের প্রবেশ</span>
+          <span className="auth-status">নিরাপদ প্রবেশ</span>
         </div>
-        <h1 className="auth-heading">Welcome back</h1>
+        <h1 className="auth-heading">আবার স্বাগতম</h1>
         <p className="auth-description">
-          Sign in to pick up where your flat left off.
+          ফ্ল্যাটের কাজ ও হিসাব দেখতে আপনার অ্যাকাউন্টে প্রবেশ করুন।
         </p>
         <form onSubmit={handleSignIn} className="auth-form">
           <label htmlFor="email" className="auth-field-label">
-            Email address
+            ইমেইল ঠিকানা
             <span className="auth-input-wrap">
               <input
                 id="email"
@@ -64,7 +65,7 @@ export default function SignInPage() {
             </span>
           </label>
           <label htmlFor="password" className="auth-field-label">
-            Password
+            পাসওয়ার্ড
             <span className="auth-input-wrap">
               <input
                 id="password"
@@ -73,16 +74,16 @@ export default function SignInPage() {
                 onChange={(event) => setPassword(event.target.value)}
                 required
                 autoComplete="current-password"
-                placeholder="Enter your password"
+                placeholder="আপনার পাসওয়ার্ড লিখুন"
                 className="auth-input auth-password-input"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((visible) => !visible)}
-                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-label={showPassword ? "পাসওয়ার্ড লুকান" : "পাসওয়ার্ড দেখান"}
                 className="auth-reveal-button"
               >
-                {showPassword ? "Hide" : "Show"}
+                {showPassword ? "লুকান" : "দেখান"}
               </button>
             </span>
           </label>
@@ -92,14 +93,14 @@ export default function SignInPage() {
             </p>
           )}
           <button type="submit" disabled={loading} className="auth-submit">
-            {loading ? "Signing in…" : "Sign in"}
+            {loading ? "প্রবেশ করা হচ্ছে…" : "প্রবেশ করুন"}
             {!loading && <span aria-hidden="true">→</span>}
           </button>
         </form>
         <p className="auth-card-footer">
-          New to Bachelor Point?{" "}
+          ব্যাচেলর পয়েন্টে নতুন?{" "}
           <Link href="/sign-up" className="auth-inline-link">
-            Create your account
+            অ্যাকাউন্ট খুলুন
           </Link>
         </p>
       </SurfaceCard>

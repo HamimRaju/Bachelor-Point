@@ -5,6 +5,7 @@ import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { FLAT_MEMBERS } from "@/lib/members";
 import { PageFrame, SurfaceCard } from "@/components/ui";
+import { banglaError, formatBnNumber, translateMemberName } from "@/lib/bn";
 
 const fullNames: Record<string, string> = {
   "raju@bachelorpoint.com": "Hamim Islam Raju",
@@ -38,8 +39,9 @@ export default function ProfilePage() {
   const [signOutError, setSignOutError] = useState<string | null>(null);
   const { data: session } = authClient.useSession();
   const email = session?.user?.email?.toLowerCase() ?? "";
-  const userName =
-    fullNames[email] ?? session?.user?.name ?? "Loading profile…";
+  const userName = translateMemberName(
+    fullNames[email] ?? session?.user?.name ?? "প্রোফাইল লোড হচ্ছে…",
+  );
 
   const handleSignOut = async () => {
     setLoading(true);
@@ -50,14 +52,14 @@ export default function ProfilePage() {
         fetchOptions: {
           onSuccess: () => router.replace("/"),
           onError: (context) => {
-            setSignOutError(context.error.message || "Could not sign out. Try again.");
+            setSignOutError(banglaError(context.error, "লগ আউট করা যায়নি। আবার চেষ্টা করুন।"));
             setLoading(false);
           },
         },
       });
     } catch (error) {
       setSignOutError(
-        error instanceof Error ? error.message : "Could not sign out. Try again.",
+        banglaError(error, "লগ আউট করা যায়নি। আবার চেষ্টা করুন।"),
       );
       setLoading(false);
     }
@@ -66,24 +68,24 @@ export default function ProfilePage() {
   return (
     <PageFrame className="profile-page">
       <header className="profile-page-heading">
-        <h1 className="text-2xl font-bold tracking-tight">Profile &amp; Settings</h1>
-        <p className="mt-1 text-sm text-white/60">Your account and mess preferences.</p>
+        <h1 className="text-2xl font-bold tracking-tight">প্রোফাইল ও সেটিংস</h1>
+        <p className="mt-1 text-sm text-white/60">আপনার অ্যাকাউন্ট ও মেসের পছন্দসমূহ।</p>
       </header>
 
       <SurfaceCard className="profile-identity-card p-5 sm:p-6">
-        <span className="profile-tech-label">MEMBER PROFILE <span>·</span> BP-03B</span>
+        <span className="profile-tech-label">সদস্যের প্রোফাইল <span>·</span> BP-03B</span>
         <div className="profile-initials">{getInitials(userName)}</div>
         <h2 className="mt-3 text-xl font-bold tracking-tight">{userName}</h2>
         <p className="mt-1 max-w-full truncate text-sm text-white/65">{email}</p>
-        <span className="profile-resident-badge">Flat 3B Resident</span>
+        <span className="profile-resident-badge">ফ্ল্যাট ৩বি-এর সদস্য</span>
         <span className="profile-card-index" aria-hidden="true">BP / 03B</span>
       </SurfaceCard>
 
       <SurfaceCard className="profile-roommates-card px-4 py-3">
-        <h2 className="profile-section-title">FLATMATES (5 FRIENDS)</h2>
+        <h2 className="profile-section-title">ফ্ল্যাটমেট ({formatBnNumber(5)} জন)</h2>
         <div className="mt-2">
           {orderedMembers.map((member) => {
-            const name = fullNames[member.email] ?? member.name;
+            const name = translateMemberName(fullNames[member.email] ?? member.name);
             const isCurrentUser = member.email === email;
 
             return (
@@ -92,11 +94,11 @@ export default function ProfilePage() {
                   {getInitials(name).slice(0, 1)}
                 </span>
                 <span className="min-w-0 flex-1 truncate text-sm font-semibold">
-                  {name}{isCurrentUser ? " (You)" : ""}
+                  {name}{isCurrentUser ? " (আপনি)" : ""}
                 </span>
                 <span className="profile-active-badge">
                   <span aria-hidden="true" />
-                  Active
+                  সক্রিয়
                 </span>
               </div>
             );
@@ -114,7 +116,7 @@ export default function ProfilePage() {
           disabled={loading}
           className="profile-signout-button"
         >
-          {loading ? "Signing out…" : "Sign Out / Log Out"}
+          {loading ? "লগ আউট হচ্ছে…" : "লগ আউট করুন"}
         </button>
       </div>
     </PageFrame>

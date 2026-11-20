@@ -15,7 +15,7 @@
   --color-obsidian: var(--obsidian);
   --color-cyan-mint: var(--cyan-mint);
   --color-cream-gold: var(--cream-gold);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-geist-sans), var(--font-noto-bengali);
   --font-display: var(--font-space-grotesk);
 }
 
@@ -39,7 +39,7 @@ body {
     radial-gradient(ellipse at 72% 92%, rgb(192 73 144 / 22%), transparent 38rem),
     linear-gradient(145deg, #0b1020 4%, #17152f 52%, #102738 100%);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), var(--font-noto-bengali), Arial, Helvetica, sans-serif;
 }
 
 button,
@@ -116,7 +116,7 @@ select:focus {
 .brand-wordmark-name {
   display: block;
   color: inherit;
-  font-family: var(--font-space-grotesk), sans-serif;
+  font-family: var(--font-space-grotesk), var(--font-noto-bengali), sans-serif;
   font-size: 0.92rem;
   font-weight: 700;
   letter-spacing: 0.015em;
@@ -1044,7 +1044,7 @@ button.home-task-check:hover:not(:disabled) {
 .public-headline {
   margin-top: 1.15rem;
   color: #f6fffc;
-  font-family: var(--font-space-grotesk), sans-serif;
+  font-family: var(--font-space-grotesk), var(--font-noto-bengali), sans-serif;
   font-size: clamp(2.55rem, 10vw, 4.7rem);
   font-weight: 700;
   letter-spacing: -0.075em;
@@ -1212,7 +1212,7 @@ button.home-task-check:hover:not(:disabled) {
   border-radius: 0.9rem;
   background: linear-gradient(145deg, #70e9c5, #56bed0);
   color: #123b38;
-  font-family: var(--font-space-grotesk), sans-serif;
+  font-family: var(--font-space-grotesk), var(--font-noto-bengali), sans-serif;
   font-size: 0.7rem;
   font-weight: 800;
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 60%);
@@ -1236,7 +1236,7 @@ button.home-task-check:hover:not(:disabled) {
   overflow: hidden;
   margin-top: 0.18rem;
   color: #f4fffc;
-  font-family: var(--font-space-grotesk), sans-serif;
+  font-family: var(--font-space-grotesk), var(--font-noto-bengali), sans-serif;
   font-size: 0.95rem;
   font-weight: 650;
   letter-spacing: -0.025em;
@@ -1296,7 +1296,7 @@ button.home-task-check:hover:not(:disabled) {
   overflow: hidden;
   margin-top: 0.4rem;
   color: #f9fffc;
-  font-family: var(--font-space-grotesk), sans-serif;
+  font-family: var(--font-space-grotesk), var(--font-noto-bengali), sans-serif;
   font-size: clamp(1.2rem, 5vw, 1.55rem);
   font-weight: 700;
   letter-spacing: -0.055em;
@@ -1695,7 +1695,7 @@ button.home-task-check:hover:not(:disabled) {
 .auth-heading {
   margin-top: 1.15rem;
   color: #14252b;
-  font-family: var(--font-space-grotesk), sans-serif;
+  font-family: var(--font-space-grotesk), var(--font-noto-bengali), sans-serif;
   font-size: clamp(1.7rem, 7vw, 2.1rem);
   font-weight: 700;
   letter-spacing: -0.055em;

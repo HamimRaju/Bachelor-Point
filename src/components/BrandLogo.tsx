@@ -25,7 +25,7 @@ export default function BrandLogo({
       <span className="brand-wordmark">
         <span className="brand-wordmark-name">Bachelor Point</span>
         {showTagline && (
-          <span className="brand-wordmark-tagline">SHARED LIVING, IN SYNC</span>
+          <span className="brand-wordmark-tagline">একসাথে থাকি, গুছিয়ে চলি</span>
         )}
       </span>
     </span>
