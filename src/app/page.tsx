@@ -15,7 +15,7 @@ function PublicHomePage() {
           <Link href="/" className="flex items-center gap-3">
             <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#46F0D2] text-lg font-black text-[#131321]">B</span>
             <span>
-              <span className="block text-sm font-bold">Bachelor Point</span>
+              <span className="font-display block text-sm font-bold">Bachelor Point</span>
               <span className="block text-xs text-white/60">Better shared living</span>
             </span>
           </Link>
@@ -38,7 +38,7 @@ function PublicHomePage() {
 
           <SurfaceCard className="mx-auto w-full max-w-md p-4 sm:p-6">
             <div className="flex items-center justify-between">
-              <div><p className="text-xs font-semibold text-[#131321]/55">BACHELOR POINT</p><h2 className="mt-1 text-lg font-bold">Today at a glance</h2></div>
+              <div><p className="font-display text-xs font-semibold tracking-[0.12em] text-[#131321]/55">BACHELOR POINT</p><h2 className="mt-1 text-lg font-bold">Today at a glance</h2></div>
               <Pill tone="gold">Flat 3B</Pill>
             </div>
             <div className="mt-5 grid grid-cols-2 gap-3">
