@@ -1,140 +1,111 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Suspense } from "react";
+import { usePathname } from "next/navigation";
+
+const navItems = [
+  { name: "Home", href: "/", icon: "home" },
+  { name: "Tasks", href: "/tasks", icon: "tasks" },
+  { name: "Expenses", href: "/expenses", icon: "expenses" },
+  { name: "Members", href: "/members", icon: "members" },
+  { name: "More", href: "/more", icon: "more" },
+] as const;
+
+type NavIconName = (typeof navItems)[number]["icon"];
+
+function NavIcon({ name }: { name: NavIconName }) {
+  const commonProps = {
+    "aria-hidden": true as const,
+    className: "h-5 w-5 shrink-0",
+    fill: "none",
+    stroke: "currentColor",
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+    strokeWidth: 1.8,
+    viewBox: "0 0 24 24",
+  };
+
+  switch (name) {
+    case "home":
+      return (
+        <svg {...commonProps}>
+          <path d="m3.5 10 8.5-7 8.5 7" />
+          <path d="M5.5 9v10.5a1 1 0 0 0 1 1h4v-6h3v6h4a1 1 0 0 0 1-1V9" />
+        </svg>
+      );
+    case "tasks":
+      return (
+        <svg {...commonProps}>
+          <rect x="4" y="3.5" width="16" height="17" rx="3" />
+          <path d="m8 11.5 2.2 2.2 5-5M8 7.5h2M8 17h8" />
+        </svg>
+      );
+    case "expenses":
+      return (
+        <svg {...commonProps}>
+          <path d="M4 6.5h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-12a2 2 0 0 1 2-2h12" />
+          <path d="M20 11h-4a2 2 0 0 0 0 4h4M16 13h.01" />
+        </svg>
+      );
+    case "members":
+      return (
+        <svg {...commonProps}>
+          <path d="M16 20v-1.5a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4V20" />
+          <circle cx="9.5" cy="7.5" r="3.5" />
+          <path d="M17 11a3.5 3.5 0 1 0-1-6.85M21 20v-1.5a4 4 0 0 0-3-3.87" />
+        </svg>
+      );
+    case "more":
+      return (
+        <svg {...commonProps}>
+          <circle cx="5" cy="12" r="1.2" />
+          <circle cx="12" cy="12" r="1.2" />
+          <circle cx="19" cy="12" r="1.2" />
+        </svg>
+      );
+  }
+}
 
 function BottomNavContent() {
   const pathname = usePathname();
 
-  const navItems = [
-    {
-      name: "Home",
-      href: "/dashboard",
-      icon: (
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-          />
-        </svg>
-      ),
-    },
-    {
-      name: "Tasks",
-      href: "/tasks/detail",
-      icon: (
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
-          />
-        </svg>
-      ),
-    },
-    {
-      name: "Expenses",
-      href: "/expenses",
-      icon: (
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-      ),
-    },
-    {
-      name: "Members",
-      href: "/members",
-      icon: (
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5 5 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-          />
-        </svg>
-      ),
-    },
-    {
-      name: "More",
-      href: "/profile",
-      icon: (
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
-          />
-        </svg>
-      ),
-    },
-  ];
-
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-100 bg-white px-4 py-2.5 shadow-lg">
-      <div className="mx-auto flex max-w-md items-center justify-around">
-        {navItems.map((item) => {
-          const isActive =
-            pathname === item.href ||
-            (item.name === "Tasks" && pathname.startsWith("/tasks"));
+    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex justify-center px-3 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] sm:px-4">
+      <nav
+        aria-label="Main navigation"
+        className="glass-nav w-full max-w-[34rem] rounded-3xl px-1 py-1.5"
+      >
+        <div className="flex items-stretch gap-0.5">
+          {navItems.map((item) => {
+            const isActive =
+              pathname === item.href ||
+              (item.name === "Home" && pathname === "/dashboard") ||
+              (item.name === "More" && pathname === "/profile") ||
+              (item.name === "Tasks" && pathname.startsWith("/tasks"));
 
-          return (
-            <Link
-              key={item.name}
-              href={item.href}
-              aria-current={isActive ? "page" : undefined}
-              className={`flex flex-col items-center gap-1 transition-all ${
-                isActive
-                  ? "scale-105 font-bold text-blue-600"
-                  : "font-medium text-slate-400 hover:text-slate-600"
-              }`}
-            >
-              <div className="flex items-center justify-center">
-                {item.icon}
-              </div>
-
-              <span className="text-[10px] tracking-tight">
-                {item.name}
-              </span>
-            </Link>
-          );
-        })}
-      </div>
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                aria-current={isActive ? "page" : undefined}
+                className={`pointer-events-auto group flex min-h-[3.5rem] min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-full px-0.5 text-[10px] transition-colors duration-150 active:scale-[0.97] motion-reduce:transition-none sm:min-h-[3.75rem] sm:text-[11px] ${
+                  isActive
+                    ? "nav-active font-extrabold"
+                    : "font-semibold text-white/65 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                <span className="transition-transform duration-200 ease-out group-hover:-translate-y-px motion-reduce:transition-none">
+                  <NavIcon name={item.icon} />
+                </span>
+                <span className="truncate tracking-tight">
+                  {item.name}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 }

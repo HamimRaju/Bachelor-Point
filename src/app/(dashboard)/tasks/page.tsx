@@ -1,200 +1,156 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import BottomNav from "@/components/BottomNav";
+import { useEffect, useState } from "react";
+import { completeTask, getTaskRotations, skipTask } from "@/actions/task.actions";
+import { FLAT_MEMBERS } from "@/lib/members";
+import { mergeTaskRotationViews } from "@/lib/task-view";
+import type { TaskRotationView } from "@/lib/task-rotation";
+import {
+  PageFrame,
+  Pill,
+  SectionHeading,
+  SurfaceCard,
+} from "@/components/ui";
+
+type TaskFilter = "All" | "My Turn" | "Completed";
+const filters: TaskFilter[] = ["All", "My Turn", "Completed"];
 
 export default function TasksPage() {
-  const [filter, setFilter] = useState("Shopping"); // Default filter set to Shopping since "All" is removed
-  const [toast, setToast] = useState<{ message: string; type: "done" | "skip" } | null>(null);
+  const [filter, setFilter] = useState<TaskFilter>("All");
+  const [toast, setToast] = useState<string | null>(null);
+  const [tasks, setTasks] = useState<TaskRotationView[]>([]);
+  const [memberId, setMemberId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadingTaskKey, setLoadingTaskKey] = useState<string | null>(null);
 
-  const [tasks, setTasks] = useState([
-    { 
-      id: 1, 
-      title: "Polythene kena", 
-      turn: "Rubel", 
-      category: "Shopping", 
-      icon: (
-        <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-        </svg>
-      ) 
-    },
-    { 
-      id: 2, 
-      title: "Vimbar kena", 
-      turn: "Arefin", 
-      category: "Shopping", 
-      icon: (
-        <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-        </svg>
-      ) 
-    },
-    { 
-      id: 3, 
-      title: "Harpic kena", 
-      turn: "Real", 
-      category: "Cleaning", 
-      icon: (
-        <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-        </svg>
-      ) 
-    },
-    { 
-      id: 4, 
-      title: "Washroom clean kora", 
-      turn: "Raju", 
-      category: "Cleaning", 
-      icon: (
-        <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-        </svg>
-      ) 
-    },
-    { 
-      id: 5, 
-      title: "Electricity Bill pay", 
-      turn: "Tanvir", 
-      category: "Bills", 
-      icon: (
-        <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
-      ) 
-    },
-  ]);
+  useEffect(() => {
+    let mounted = true;
+    const loadTasks = async () => {
+      try {
+        const result = await getTaskRotations();
+        if (!mounted) return;
+        setMemberId(result.memberId);
+        setTasks((current) => mergeTaskRotationViews(current, result.tasks));
+        setLoadError(null);
+      } catch (error) {
+        if (mounted) setLoadError(error instanceof Error ? error.message : "Unable to load tasks.");
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
+    };
+    void loadTasks();
+    const interval = window.setInterval(() => {
+      if (document.visibilityState === "visible") void loadTasks();
+    }, 30_000);
+    window.addEventListener("focus", loadTasks);
+    return () => {
+      mounted = false;
+      window.clearInterval(interval);
+      window.removeEventListener("focus", loadTasks);
+    };
+  }, []);
 
-  const showToastMsg = (message: string, type: "done" | "skip") => {
-    setToast({ message, type });
-    setTimeout(() => {
-      setToast(null);
-    }, 1500);
+  const showToast = (message: string) => {
+    setToast(message);
+    window.setTimeout(() => setToast(null), 2400);
   };
 
-  const handleDone = (id: number, title: string) => {
-    showToastMsg(`Task "${title}" marked as Done! 🎉`, "done");
-    setTasks(tasks.filter((task) => task.id !== id));
+  const handleTaskAction = async (task: TaskRotationView, action: "Completed" | "Skipped") => {
+    if (task.currentMemberId !== memberId || loadingTaskKey) return;
+    setLoadingTaskKey(task.key);
+    try {
+      const result = action === "Completed"
+        ? await completeTask(task.key, task.cycleId)
+        : await skipTask(task.key, task.cycleId);
+      setTasks((current) => current.map((item) =>
+        item.key === task.key && result.task.version >= item.version ? result.task : item,
+      ));
+      showToast(result.cycleCompleted
+        ? `${task.title} is complete for all five members. A new cycle has started.`
+        : action === "Completed" ? `${task.title} marked as done.` : `Your ${task.title} turn is still pending.`);
+    } catch (error) {
+      try {
+        const latest = await getTaskRotations();
+        setMemberId(latest.memberId);
+        setTasks((current) => mergeTaskRotationViews(current, latest.tasks));
+      } catch {
+        // Keep the current list if refresh is unavailable.
+      }
+      showToast(error instanceof Error ? error.message : "The task could not be updated.");
+    } finally {
+      setLoadingTaskKey(null);
+    }
   };
 
-  const handleSkip = (id: number, title: string) => {
-    showToastMsg(`Task "${title}" skipped for today! ⏭️`, "skip");
-  };
-
-  const filteredTasks = tasks.filter((t) => t.category.toLowerCase() === filter.toLowerCase());
+  const filteredTasks = tasks.filter((task) => {
+    const myStatus = task.responsibilities.find((item) => item.memberId === memberId)?.status;
+    if (filter === "My Turn") return task.currentMemberId === memberId;
+    if (filter === "Completed") return myStatus === "Completed";
+    return true;
+  });
 
   return (
-    <main className="min-h-screen bg-[#070b19] text-white pb-28 pt-4 px-4 font-sans relative overflow-hidden">
-      
-      {toast && (
-        <div className="fixed top-5 right-5 z-50 transition-all duration-300">
-          <div className={`px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border text-xs font-bold ${
-            toast.type === "done" 
-              ? "bg-emerald-950/90 border-emerald-500/50 text-emerald-300 shadow-emerald-900/50" 
-              : "bg-amber-950/90 border-amber-500/50 text-amber-300 shadow-amber-900/50"
-          }`}>
-            <span className="text-base">{toast.type === "done" ? "✅" : "⏭️"}</span>
-            <span>{toast.message}</span>
-          </div>
-        </div>
-      )}
+    <PageFrame className="palette-page">
+      {toast && <div role="status" className="fixed left-1/2 top-4 z-50 max-w-[calc(100vw-2rem)] -translate-x-1/2 rounded-full bg-[#FBE2B4] px-4 py-2.5 text-center text-xs font-bold text-[#131321] shadow-none">{toast}</div>}
 
-      <div 
-        className="absolute inset-0 opacity-15 pointer-events-none" 
-        style={{
-          backgroundImage: "radial-gradient(#3b82f6 1px, transparent 1px)",
-          backgroundSize: "24px 24px"
-        }}
-      />
+      <header>
+        <p className="text-xs font-semibold text-[#46F0D2]">Bachelor Point · Flat 3B</p>
+        <h1 className="mt-1 text-2xl font-bold tracking-tight">Tasks</h1>
+        <p className="mt-1 text-sm text-white/65">A fair turn for every flatmate.</p>
+      </header>
 
-      <div className="max-w-md mx-auto space-y-5 relative z-10">
-        
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-lg font-black text-white tracking-tight">Step 1: Queue Tasks</h1>
-            <p className="text-xs text-slate-400 font-medium">Chores & grocery turn rotations</p>
-          </div>
-          <button 
-            type="button"
-            className="w-9 h-9 bg-blue-600/30 text-blue-400 border border-blue-500/30 rounded-full font-bold flex items-center justify-center text-lg hover:bg-blue-600 hover:text-white transition shadow-md active:scale-95"
-            onClick={() => showToastMsg("Add task modal coming soon!", "done")}
-          >
-            +
+      <div role="tablist" aria-label="Filter tasks" className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+        {filters.map((item) => (
+          <button key={item} type="button" role="tab" aria-selected={filter === item} onClick={() => setFilter(item)} className={`shrink-0 rounded-full px-4 py-2 text-xs font-bold transition-colors ${filter === item ? "bg-[#46F0D2] text-[#131321]" : "border border-white/20 bg-white/10 text-white/70"}`}>
+            {item}
           </button>
-        </div>
-
-        {/* Filter Pills without "All", perfectly fitting mobile screen width */}
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-          {["Shopping", "Cleaning", "Bills"].map((item) => (
-            <button
-              key={item}
-              onClick={() => setFilter(item)}
-              className={`px-4 py-2 rounded-2xl text-xs font-bold transition whitespace-nowrap active:scale-95 ${
-                filter === item
-                  ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30 border border-blue-500"
-                  : "bg-[#0b132b] text-slate-300 border border-[#1e293b] hover:bg-slate-800"
-              }`}
-            >
-              {item}
-            </button>
-          ))}
-
-          {/* Task Details Direct Link Button */}
-          <Link
-            href="/tasks/detail"
-            className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white border border-blue-400/40 rounded-2xl text-xs font-extrabold transition whitespace-nowrap shadow-md shadow-blue-600/20 flex items-center gap-1 active:scale-95"
-          >
-            <span>Task Details</span>
-            <span className="text-xs">›</span>
-          </Link>
-        </div>
-
-        <div className="space-y-3">
-          {filteredTasks.length === 0 ? (
-            <div className="text-center py-12 bg-[#0b132b] rounded-3xl border border-[#1e293b] p-6">
-              <p className="text-sm font-bold text-slate-400">No tasks found in this category!</p>
-            </div>
-          ) : (
-            filteredTasks.map((task) => (
-              <div
-                key={task.id}
-                className="bg-[#0b132b] rounded-3xl p-4 border border-[#1e293b]/80 shadow-lg flex items-center justify-between transition hover:border-blue-500/30"
-              >
-                <Link href="/tasks/detail" className="flex items-center gap-3.5 flex-1">
-                  <div className="w-11 h-11 rounded-2xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center shadow-inner">
-                    {task.icon}
-                  </div>
-                  <div>
-                    <h3 className="text-xs font-bold text-white hover:text-blue-400 transition">{task.title}</h3>
-                    <p className="text-[11px] text-slate-400 mt-0.5">
-                      Turn: <span className="font-bold text-blue-400">{task.turn}</span>
-                    </p>
-                  </div>
-                </Link>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handleDone(task.id, task.title)}
-                    className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white text-[11px] font-extrabold rounded-2xl shadow-md shadow-emerald-600/30 active:scale-95 transition flex items-center gap-1"
-                  >
-                    Done
-                  </button>
-                  <button
-                    onClick={() => handleSkip(task.id, task.title)}
-                    className="px-3.5 py-2 bg-[#141e38] hover:bg-[#1a2647] text-slate-300 border border-slate-700/60 text-[11px] font-bold rounded-2xl active:scale-95 transition"
-                  >
-                    Skip
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-
+        ))}
+        <Link href="/tasks/detail" className="ml-auto inline-flex shrink-0 items-center px-2 py-2 text-xs font-semibold text-white/70">History <span aria-hidden="true" className="ml-1">›</span></Link>
       </div>
 
-      <BottomNav />
-    </main>
+      <section className="space-y-3">
+        <SectionHeading title={`${filter} tasks`} subtitle={`${filteredTasks.length} task${filteredTasks.length === 1 ? "" : "s"}`} />
+        {isLoading && tasks.length === 0 ? (
+          <SurfaceCard className="p-5 text-sm text-white/70">Loading task rotations…</SurfaceCard>
+        ) : loadError && tasks.length === 0 ? (
+          <SurfaceCard className="p-5 text-sm font-medium">{loadError}</SurfaceCard>
+        ) : filteredTasks.length === 0 ? (
+          <SurfaceCard className="p-6 text-center">
+            <p className="text-sm font-bold">Nothing to show here</p>
+            <p className="mt-1 text-xs text-white/60">Your task list will update as turns rotate.</p>
+          </SurfaceCard>
+        ) : (
+          <SurfaceCard className="divide-y divide-white/10 px-4">
+            {filteredTasks.map((task) => {
+              const member = FLAT_MEMBERS.find((flatmate) => flatmate.id === task.currentMemberId);
+              const myStatus = task.responsibilities.find((item) => item.memberId === memberId)?.status;
+              const isMyTurn = task.currentMemberId === memberId;
+              const isDone = myStatus === "Completed";
+              return (
+                <div key={task.id} className="flex items-center gap-3 py-3.5">
+                  <div className="min-w-0 flex-1">
+                    <Link href={`/tasks/${task.key}`} className="text-sm font-bold">{task.title}</Link>
+                    <p className="mt-1 text-xs text-white/60">{task.category} · {task.completedCount}/5 turns complete</p>
+                    <Pill tone="gold" className="mt-2">{member?.name ?? "Unassigned"}{isMyTurn ? " · You" : ""}</Pill>
+                  </div>
+                  {isDone ? (
+                    <span className="text-xs font-semibold text-white/65">Done ✓</span>
+                  ) : isMyTurn ? (
+                    <div className="flex shrink-0 flex-col items-end gap-1">
+                      <button type="button" onClick={() => void handleTaskAction(task, "Completed")} disabled={loadingTaskKey === task.key} className="rounded-full bg-[#46F0D2] px-3.5 py-2 text-xs font-bold text-[#131321] disabled:opacity-60">
+                        {loadingTaskKey === task.key ? "Saving…" : "Done"}
+                      </button>
+                      <button type="button" onClick={() => void handleTaskAction(task, "Skipped")} disabled={loadingTaskKey === task.key} className="text-[11px] text-white/70 underline underline-offset-2 disabled:opacity-50">Skip</button>
+                    </div>
+                  ) : <span className="text-xs text-white/60">Waiting</span>}
+                </div>
+              );
+            })}
+          </SurfaceCard>
+        )}
+      </section>
+    </PageFrame>
   );
 }
