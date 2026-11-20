@@ -1,63 +1,139 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { Pill, SurfaceCard } from "@/components/ui";
 import BottomNav from "@/components/BottomNav";
 import DashboardPage from "./(dashboard)/dashboard/page";
 import { getCurrentMember } from "@/lib/current-member";
 
-const highlights = ["Fair task turns", "Shared expenses", "Bills in one place"];
+const previewTasks = [
+  { title: "Vim Bar Kena", detail: "Your turn today", status: "next" },
+  { title: "Washroom Clean", detail: "Radin is up next", status: "waiting" },
+  { title: "Harpic Kena", detail: "Completed this week", status: "done" },
+] as const;
+
+const appFeatures = [
+  { icon: "↻", title: "Fair turns" },
+  { icon: "৳", title: "Clear splits" },
+  { icon: "✓", title: "Shared bills" },
+];
 
 function PublicHomePage() {
   return (
-    <main className="app-backdrop px-4 py-5 text-white sm:px-8 sm:py-10">
-      <div className="mx-auto flex min-h-[calc(100dvh-2.5rem)] w-full max-w-5xl flex-col sm:min-h-[calc(100dvh-3.5rem)]">
-        <header className="flex items-center justify-between gap-4">
-          <Link href="/" className="flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#46F0D2] text-lg font-black text-[#131321]">B</span>
+    <main className="public-home">
+      <div className="public-home-shell">
+        <header className="public-app-bar">
+          <Link href="/" className="public-brand" aria-label="Bachelor Point home">
+            <span className="public-brand-mark" aria-hidden="true">BP</span>
             <span>
-              <span className="font-display block text-sm font-bold">Bachelor Point</span>
-              <span className="block text-xs text-white/60">Better shared living</span>
+              <span className="public-brand-name">Bachelor Point</span>
+              <span className="public-brand-caption">SHARED LIVING, IN SYNC</span>
             </span>
           </Link>
-          <Link href="/sign-in" className="rounded-full border border-white/15 px-4 py-2.5 text-sm font-semibold text-white">Sign in</Link>
+          <Link href="/sign-in" className="public-signin">
+            Sign in <span aria-hidden="true">↗</span>
+          </Link>
         </header>
 
-        <div className="grid flex-1 items-center gap-8 py-8 sm:gap-10 sm:py-12 lg:grid-cols-2 lg:gap-16">
-          <section>
-            <Pill tone="gold">Made for shared living</Pill>
-            <h1 className="mt-5 max-w-xl text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl">One home.<br /><span className="gradient-text">Everyone in sync.</span></h1>
-            <p className="mt-5 max-w-lg text-base leading-7 text-white/70">Keep chores fair, shared costs clear, and your whole flat on the same page—without the group-chat confusion.</p>
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <Link href="/sign-up" className="rounded-full bg-[#46F0D2] px-6 py-3.5 text-center text-sm font-bold text-[#131321]">Get started <span aria-hidden="true">→</span></Link>
-              <Link href="/sign-in" className="rounded-full border border-white/15 px-6 py-3.5 text-center text-sm font-semibold text-white">I already have an account</Link>
+        <div className="public-home-content">
+          <section className="public-hero">
+            <span className="public-kicker">
+              <span aria-hidden="true" />
+              YOUR HOME, RUNNING SMOOTHLY
+            </span>
+            <h1 className="public-headline">
+              One home.
+              <span>Everyone in sync.</span>
+            </h1>
+            <p className="public-description">
+              Chores, shared costs and bills—together in one simple place for
+              your flat.
+            </p>
+            <div className="public-actions">
+              <Link href="/sign-up" className="public-primary-button">
+                <span>Get started</span>
+                <span className="public-button-arrow" aria-hidden="true">→</span>
+              </Link>
+              <Link href="/sign-in" className="public-secondary-button">
+                I already have an account
+                <span aria-hidden="true">↗</span>
+              </Link>
             </div>
-            <div className="mt-8 flex flex-wrap gap-2">
-              {highlights.map((highlight) => <Pill key={highlight} tone="dark" className="text-white/80">{highlight}</Pill>)}
-            </div>
+            <p className="public-proof">
+              <span className="public-proof-avatars" aria-hidden="true">
+                <span>R</span><span>A</span><span>R</span>
+              </span>
+              Made for real flatmates, not group-chat chaos.
+            </p>
           </section>
 
-          <SurfaceCard className="mx-auto w-full max-w-md p-4 sm:p-6">
-            <div className="flex items-center justify-between">
-              <div><p className="font-display text-xs font-semibold tracking-[0.12em] text-[#131321]/55">BACHELOR POINT</p><h2 className="mt-1 text-lg font-bold">Today at a glance</h2></div>
-              <Pill tone="gold">Flat 3B</Pill>
+          <section
+            className="public-app-preview"
+            aria-label="Example Bachelor Point app dashboard"
+          >
+            <div className="public-preview-top">
+              <div className="public-preview-avatar" aria-hidden="true">BP</div>
+              <div className="public-preview-greeting">
+                <span>FLAT 3B · TODAY</span>
+                <h2>Your home at a glance</h2>
+              </div>
+              <span className="public-preview-live"><span /> LIVE</span>
             </div>
-            <div className="mt-5 grid grid-cols-2 gap-3">
-              <div className="gradient-panel rounded-2xl p-4 text-white"><p className="text-2xl font-bold">5</p><p className="mt-1 text-xs text-white/65">Active members</p></div>
-              <div className="rounded-2xl bg-[#FBE2B4] p-4 text-[#131321]"><p className="text-xl font-bold">৳2,450</p><p className="mt-1 text-xs">Shared / month</p></div>
+
+            <div className="public-preview-stats">
+              <div className="public-stat-card public-stat-mint">
+                <span>FLATMATES</span>
+                <strong>05</strong>
+                <small>All together</small>
+              </div>
+              <div className="public-stat-card public-stat-gold">
+                <span>SHARED THIS MONTH</span>
+                <strong>৳2,450</strong>
+                <small>Clear for everyone</small>
+              </div>
             </div>
-            <div className="mt-5 space-y-2">
-              <p className="text-xs font-bold">Rotation tasks</p>
-              {["Vim Bar Kena", "Washroom Clean", "Harpic Kena"].map((task, index) => (
-                <div key={task} className="flex items-center gap-3 rounded-2xl border border-[#131321]/10 px-3 py-3">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#46F0D2] text-xs font-bold text-[#131321]">{index + 1}</span>
-                  <span className="flex-1 text-sm font-semibold">{task}</span>
-                  <span className="h-5 w-5 rounded-full border border-[#131321]/25" />
-                </div>
-              ))}
+
+            <div className="public-preview-tasks">
+              <div className="public-preview-section-heading">
+                <h3>Rotation tasks</h3>
+                <span>VIEW ALL <span aria-hidden="true">→</span></span>
+              </div>
+              <div className="public-preview-task-list">
+                {previewTasks.map((task, index) => (
+                  <div className="public-preview-task" key={task.title}>
+                    <span className={`public-task-indicator public-task-${task.status}`}>
+                      {task.status === "done" ? "✓" : index + 1}
+                    </span>
+                    <span className="public-task-copy">
+                      <strong>{task.title}</strong>
+                      <small>{task.detail}</small>
+                    </span>
+                    {task.status === "next" && (
+                      <span className="public-task-badge">YOUR TURN</span>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
-          </SurfaceCard>
+
+            <div className="public-preview-nav" aria-hidden="true">
+              <span className="is-active"><b>⌂</b>Home</span>
+              <span><b>✓</b>Tasks</span>
+              <span><b>৳</b>Expenses</span>
+              <span><b>•••</b>More</span>
+            </div>
+          </section>
         </div>
-        <footer className="border-t border-white/10 pt-5 text-center text-xs text-white/55">A simple shared plan for the little things that make a home work.</footer>
+
+        <ul className="public-feature-list" aria-label="App features">
+          {appFeatures.map((feature) => (
+            <li key={feature.title}>
+              <span aria-hidden="true">{feature.icon}</span>
+              {feature.title}
+            </li>
+          ))}
+        </ul>
+        <footer className="public-footer">
+          A little more harmony in the everyday.
+        </footer>
       </div>
     </main>
   );
