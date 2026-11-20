@@ -112,6 +112,20 @@ export function createRotationCycle(
     };
 }
 
+export function normalizeRotationCycleHistory(
+    cycle: RotationCycle,
+): RotationCycle {
+    let hasLegacyHistory = false;
+    const history = cycle.history.map((activity) => {
+        if (activity.authUserId) return activity;
+
+        hasLegacyHistory = true;
+        return { ...activity, authUserId: "legacy" };
+    });
+
+    return hasLegacyHistory ? { ...cycle, history } : cycle;
+}
+
 function nextEligibleMember(
     cycle: RotationCycle,
     currentIndex: number,

@@ -4,6 +4,7 @@ import { FLAT_MEMBERS, getMemberByEmail } from "../src/lib/members.ts";
 import {
     applyRotationAction,
     createRotationCycle,
+    normalizeRotationCycleHistory,
     ROTATING_TASKS,
     type RotationCycle,
     type TaskAction,
@@ -135,4 +136,26 @@ test("task cycles are independent and a new cycle starts with Raju", () => {
     assert.equal(secondTask.responsibilities[0].status, "Pending");
     assert.equal(nextCycle.currentMemberId, FLAT_MEMBERS[0].id);
     assert.equal(nextCycle.responsibilities.every((item) => item.status === "Pending"), true);
+});
+
+test("legacy cycle history without auth user IDs is normalized before updates", () => {
+    const cycle = createRotationCycle();
+    const legacyActivity = {
+        id: "legacy-activity",
+        taskId: "legacy-task",
+        cycleId: cycle.cycleId,
+        memberId: FLAT_MEMBERS[0].id,
+        memberName: FLAT_MEMBERS[0].name,
+        action: "Completed" as const,
+        occurredAt: new Date("2026-11-19T12:00:00.000Z"),
+    };
+    const cycleWithLegacyHistory = {
+        ...cycle,
+        history: [legacyActivity as RotationCycle["history"][number]],
+    };
+
+    const normalized = normalizeRotationCycleHistory(cycleWithLegacyHistory);
+
+    assert.equal(normalized.history[0].authUserId, "legacy");
+    assert.equal(normalized.history[0].id, legacyActivity.id);
 });

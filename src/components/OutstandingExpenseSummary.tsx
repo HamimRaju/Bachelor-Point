@@ -9,7 +9,11 @@ import {
 import { PillButton, SurfaceCard } from "@/components/ui";
 import type { ExpenseView } from "@/lib/expense-view";
 
-export default function OutstandingExpenseSummary() {
+export default function OutstandingExpenseSummary({
+  onExpensesLoaded,
+}: {
+  onExpensesLoaded?: (expenses: ExpenseView[]) => void;
+}) {
   const [memberId, setMemberId] = useState<string | null>(null);
   const [expenses, setExpenses] = useState<ExpenseView[]>([]);
   const [settlingId, setSettlingId] = useState<string | null>(null);
@@ -24,6 +28,7 @@ export default function OutstandingExpenseSummary() {
         if (!mounted) return;
         setMemberId(result.memberId);
         setExpenses(result.expenses);
+        onExpensesLoaded?.(result.expenses);
       } catch {
         // Keep the rest of the dashboard available if expenses cannot load.
       }
@@ -41,7 +46,7 @@ export default function OutstandingExpenseSummary() {
       window.clearInterval(interval);
       window.removeEventListener("focus", refreshOnFocus);
     };
-  }, []);
+  }, [onExpensesLoaded]);
 
   const debts = expenses.flatMap((expense) => {
     const share = expense.splitBetween.find(

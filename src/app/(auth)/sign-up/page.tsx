@@ -45,27 +45,9 @@ export default function SignUpPage() {
         </div>
         <h1 className="auth-heading">Create your account</h1>
         <p className="auth-description">
-          Use your registered flat email to get started.
+          Enter your registered flat email first. Your member name will be filled in automatically.
         </p>
         <form onSubmit={handleSignUp} className="auth-form">
-          <label htmlFor="name" className="auth-field-label">
-            Member name
-            <span className="auth-input-wrap">
-              <input
-                id="name"
-                type="text"
-                value={member?.name ?? ""}
-                readOnly
-                autoComplete="name"
-                aria-describedby="member-name-help"
-                placeholder="Enter your assigned email first"
-                className="auth-input read-only:cursor-default"
-              />
-            </span>
-            <span id="member-name-help" className="sr-only">
-              Member name is matched to the authorized email address.
-            </span>
-          </label>
           <label htmlFor="email" className="auth-field-label">
             Email address
             <span className="auth-input-wrap">
@@ -84,6 +66,24 @@ export default function SignUpPage() {
                 placeholder="raju@bachelorpoint.com"
                 className="auth-input"
               />
+            </span>
+          </label>
+          <label htmlFor="name" className="auth-field-label">
+            Member name
+            <span className="auth-input-wrap">
+              <input
+                id="name"
+                type="text"
+                value={member?.name ?? ""}
+                readOnly
+                autoComplete="name"
+                aria-describedby="member-name-help"
+                placeholder="Enter your registered email first"
+                className="auth-input read-only:cursor-default"
+              />
+            </span>
+            <span id="member-name-help" className="sr-only">
+              Member name is matched to the authorized email address.
             </span>
           </label>
           <label htmlFor="password" className="auth-field-label">

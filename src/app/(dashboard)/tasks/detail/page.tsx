@@ -155,7 +155,9 @@ export default function TaskDetailPage() {
                 <div className="flex items-center justify-between py-1 px-1">
                     <div className="flex items-center gap-3">
                         <button
-                            onClick={() => router.back()}
+                            type="button"
+                            aria-label="Back to tasks"
+                            onClick={() => router.push("/tasks")}
                             className="glass-surface w-9 h-9 rounded-full flex items-center justify-center text-[#131321]/75 shadow-none text-sm font-bold active:scale-95 transition"
                         >
                             ←
@@ -172,6 +174,8 @@ export default function TaskDetailPage() {
                 {/* Task Detail Card with Navigation Slider */}
                 <div className="glass-surface relative flex flex-col items-center space-y-4 rounded-[32px] p-4 text-center shadow-none sm:p-6">
                     <button
+                        type="button"
+                        aria-label="Previous task"
                         onClick={handlePrevTask}
                         className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-[#131321]/[0.04] border border-[#131321]/10 flex items-center justify-center text-[#131321]/65 hover:bg-[#131321]/5 transition shadow-none font-bold active:scale-95"
                     >
@@ -179,6 +183,8 @@ export default function TaskDetailPage() {
                     </button>
 
                     <button
+                        type="button"
+                        aria-label="Next task"
                         onClick={handleNextTask}
                         className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-[#131321]/[0.04] border border-[#131321]/10 flex items-center justify-center text-[#131321]/65 hover:bg-[#131321]/5 transition shadow-none font-bold active:scale-95"
                     >
@@ -217,8 +223,7 @@ export default function TaskDetailPage() {
                         </div>
                         {!isMyTurn && (
                             <span className="text-[10px] text-[#131321] font-extrabold mt-1.5 bg-[#FBE2B4]/45 px-2.5 py-0.5 rounded-full border border-[#FBE2B4]/80 flex items-center gap-1">
-                                Only {currentPerson.name} can
-                                complete)
+                                Only {currentPerson.name} can complete
                             </span>
                         )}
                     </div>

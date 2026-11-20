@@ -14,7 +14,7 @@ export default function TaskDetailPage() {
 
   const params = useParams<{ id: string }>();
   const routeTaskId = params.id;
-  const initialRouteTaskSelected = useRef(false);
+  const selectedRouteTaskId = useRef<string | null>(null);
   const [memberId, setMemberId] = useState<string | null>(null);
   const [tasksList, setTasksList] = useState<TaskRotationView[]>([]);
   const [activeTaskIndex, setActiveTaskIndex] = useState(0);
@@ -31,12 +31,12 @@ export default function TaskDetailPage() {
         if (!mounted) return;
         setMemberId(result.memberId);
         setTasksList((tasks) => mergeTaskRotationViews(tasks, result.tasks));
-        if (!initialRouteTaskSelected.current) {
+        if (selectedRouteTaskId.current !== routeTaskId) {
           const selectedIndex = result.tasks.findIndex(
             (task) => task.key === routeTaskId || task.id === routeTaskId,
           );
           setActiveTaskIndex(selectedIndex >= 0 ? selectedIndex : 0);
-          initialRouteTaskSelected.current = true;
+          selectedRouteTaskId.current = routeTaskId;
         }
         setLoadError(null);
       } catch (error) {
@@ -149,7 +149,9 @@ export default function TaskDetailPage() {
         <div className="flex items-center justify-between py-2">
           <div className="flex items-center gap-3">
             <button 
-              onClick={() => router.back()}
+              type="button"
+              aria-label="Back to tasks"
+              onClick={() => router.push("/tasks")}
               className="glass-surface w-9 h-9 rounded-full flex items-center justify-center text-[#131321]/75 shadow-none text-sm font-bold active:scale-95 transition"
             >
               ←
@@ -166,6 +168,8 @@ export default function TaskDetailPage() {
           
           {/* Left & Right Slider Arrows */}
           <button 
+            type="button"
+            aria-label="Previous task"
             onClick={handlePrevTask}
             className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-[#131321]/[0.04] border border-[#131321]/10 flex items-center justify-center text-[#131321]/65 hover:bg-[#131321]/5 transition shadow-none font-bold"
             title="Previous Task"
@@ -174,6 +178,8 @@ export default function TaskDetailPage() {
           </button>
           
           <button 
+            type="button"
+            aria-label="Next task"
             onClick={handleNextTask}
             className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-[#131321]/[0.04] border border-[#131321]/10 flex items-center justify-center text-[#131321]/65 hover:bg-[#131321]/5 transition shadow-none font-bold"
             title="Next Task"

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { completeTask, getTaskRotations, skipTask } from "@/actions/task.actions";
 import { FLAT_MEMBERS } from "@/lib/members";
 import { mergeTaskRotationViews } from "@/lib/task-view";
@@ -24,6 +24,7 @@ export default function TasksPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [loadingTaskKey, setLoadingTaskKey] = useState<string | null>(null);
+  const actionInProgress = useRef(false);
 
   useEffect(() => {
     let mounted = true;
@@ -58,7 +59,22 @@ export default function TasksPage() {
   };
 
   const handleTaskAction = async (task: TaskRotationView, action: "Completed" | "Skipped") => {
-    if (task.currentMemberId !== memberId || loadingTaskKey) return;
+    if (actionInProgress.current) {
+      showToast("A task update is already saving. Please wait.");
+      return;
+    }
+    if (task.currentMemberId !== memberId) {
+      try {
+        const latest = await getTaskRotations();
+        setMemberId(latest.memberId);
+        setTasks((current) => mergeTaskRotationViews(current, latest.tasks));
+        showToast("This turn changed. The task list has been refreshed.");
+      } catch (error) {
+        showToast(error instanceof Error ? error.message : "Unable to refresh tasks.");
+      }
+      return;
+    }
+    actionInProgress.current = true;
     setLoadingTaskKey(task.key);
     try {
       const result = action === "Completed"
@@ -80,6 +96,7 @@ export default function TasksPage() {
       }
       showToast(error instanceof Error ? error.message : "The task could not be updated.");
     } finally {
+      actionInProgress.current = false;
       setLoadingTaskKey(null);
     }
   };
@@ -139,10 +156,10 @@ export default function TasksPage() {
                     <span className="text-xs font-semibold text-white/65">Done ✓</span>
                   ) : isMyTurn ? (
                     <div className="flex shrink-0 flex-col items-end gap-1">
-                      <button type="button" onClick={() => void handleTaskAction(task, "Completed")} disabled={loadingTaskKey === task.key} className="rounded-full bg-[#46F0D2] px-3.5 py-2 text-xs font-bold text-[#131321] disabled:opacity-60">
+                      <button type="button" onClick={() => void handleTaskAction(task, "Completed")} disabled={loadingTaskKey !== null} className="rounded-full bg-[#46F0D2] px-3.5 py-2 text-xs font-bold text-[#131321] disabled:cursor-not-allowed disabled:opacity-60">
                         {loadingTaskKey === task.key ? "Saving…" : "Done"}
                       </button>
-                      <button type="button" onClick={() => void handleTaskAction(task, "Skipped")} disabled={loadingTaskKey === task.key} className="text-[11px] text-white/70 underline underline-offset-2 disabled:opacity-50">Skip</button>
+                      <button type="button" onClick={() => void handleTaskAction(task, "Skipped")} disabled={loadingTaskKey !== null} className="text-[11px] text-white/70 underline underline-offset-2 disabled:cursor-not-allowed disabled:opacity-50">Skip</button>
                     </div>
                   ) : <span className="text-xs text-white/60">Waiting</span>}
                 </div>

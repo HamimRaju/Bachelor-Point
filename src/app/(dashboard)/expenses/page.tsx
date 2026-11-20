@@ -8,6 +8,10 @@ import {
   settleExpenseShare,
 } from "@/actions/expense.actions";
 import {
+  getFixedBills,
+  markFixedBillAsPaid,
+} from "@/actions/bill.actions";
+import {
   PageFrame,
   Pill,
   PillButton,
@@ -17,36 +21,30 @@ import {
 import { FLAT_MEMBERS as MEMBER_RECORDS } from "@/lib/members";
 import type { ExpenseView } from "@/lib/expense-view";
 
-type MemberName = (typeof MEMBER_RECORDS)[number]["name"];
 type TabKey = "fixed" | "splits" | "breakdown";
-type PaidMap = Record<MemberName, boolean>;
+type MemberName = (typeof MEMBER_RECORDS)[number]["name"];
 
-interface Bill {
-  id: string;
+interface FixedBillConfig {
+  id: "wifi" | "moyla" | "rent";
   title: string;
   totalAmount: number;
   perPerson: number | null;
   due: string;
-  customAmounts?: Record<MemberName, number>;
-  statuses: PaidMap;
+  customAmounts?: Partial<Record<MemberName, number>>;
 }
 
-const FLAT_MEMBERS: MemberName[] = MEMBER_RECORDS.map((member) => member.name);
-const createUnpaidMap = (): PaidMap => ({
-  Raju: false,
-  Rubel: false,
-  Arefin: false,
-  Real: false,
-  Radin: false,
-});
-const initialBills: Bill[] = [
+type FixedBill = FixedBillConfig & {
+  paidMemberIds: string[];
+};
+
+const FLAT_MEMBERS = MEMBER_RECORDS;
+const FIXED_BILL_CONFIG: FixedBillConfig[] = [
   {
     id: "wifi",
     title: "WiFi Bill",
     totalAmount: 750,
     perPerson: 150,
     due: "20 Oct 2026",
-    statuses: createUnpaidMap(),
   },
   {
     id: "moyla",
@@ -54,7 +52,6 @@ const initialBills: Bill[] = [
     totalAmount: 150,
     perPerson: 30,
     due: "15 Oct 2026",
-    statuses: createUnpaidMap(),
   },
   {
     id: "rent",
@@ -63,7 +60,6 @@ const initialBills: Bill[] = [
     perPerson: null,
     due: "01 Nov 2026",
     customAmounts: { Raju: 3200, Rubel: 3000, Arefin: 3000, Real: 2900, Radin: 2900 },
-    statuses: createUnpaidMap(),
   },
 ];
 const tabs: Array<{ key: TabKey; label: string }> = [
@@ -98,7 +94,10 @@ export default function ExpensesPage() {
   const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(shouldOpenAddExpense);
   const [expenseTitle, setExpenseTitle] = useState("");
   const [expenseAmount, setExpenseAmount] = useState("");
-  const [bills, setBills] = useState<Bill[]>(initialBills);
+  const [bills, setBills] = useState<FixedBill[]>([]);
+  const [isLoadingBills, setIsLoadingBills] = useState(true);
+  const [billsError, setBillsError] = useState<string | null>(null);
+  const [settlingBillId, setSettlingBillId] = useState<string | null>(null);
   const [selectedExpenseId, setSelectedExpenseId] = useState<string | null>(null);
 
   const currentMember =
@@ -162,25 +161,85 @@ export default function ExpensesPage() {
     };
   }, []);
 
-  const isCurrentUser = (memberName: MemberName) =>
-    memberName === currentMember.name;
+  useEffect(() => {
+    if (activeTab !== "fixed") return;
 
-  const handlePayFixedBill = (billId: string, memberName: MemberName) => {
-    if (!isCurrentUser(memberName)) {
-      showToast(`Only ${memberName} can mark their share as paid.`);
-      return;
+    let mounted = true;
+    let isLoading = false;
+
+    const loadBills = async () => {
+      if (isLoading) return;
+      isLoading = true;
+      try {
+        const result = await getFixedBills();
+        if (!mounted) return;
+        setCurrentMemberId(result.memberId);
+        const paymentsByKey = new Map(
+          result.bills.map((bill) => [bill.key, bill] as const),
+        );
+        setBills(
+          FIXED_BILL_CONFIG.map((bill) => {
+            return {
+              ...bill,
+              paidMemberIds: paymentsByKey.get(bill.id)?.paidMemberIds ?? [],
+            };
+          }),
+        );
+        setBillsError(null);
+      } catch (error) {
+        if (mounted) {
+          setBillsError(
+            error instanceof Error ? error.message : "Unable to load monthly bills.",
+          );
+        }
+      } finally {
+        isLoading = false;
+        if (mounted) setIsLoadingBills(false);
+      }
+    };
+
+    const refreshOnFocus = () => {
+      if (document.visibilityState === "visible") void loadBills();
+    };
+
+    void loadBills();
+    const interval = window.setInterval(refreshOnFocus, 5_000);
+    window.addEventListener("focus", refreshOnFocus);
+
+    return () => {
+      mounted = false;
+      window.clearInterval(interval);
+      window.removeEventListener("focus", refreshOnFocus);
+    };
+  }, [activeTab]);
+
+  const handlePayFixedBill = async (bill: FixedBill) => {
+    if (settlingBillId) return;
+
+    setSettlingBillId(bill.id);
+    try {
+      const result = await markFixedBillAsPaid(bill.id);
+      setCurrentMemberId(result.memberId);
+      setBills((current) =>
+        current.map((currentBill) =>
+          currentBill.id === result.bill.key
+            ? { ...currentBill, paidMemberIds: result.bill.paidMemberIds }
+            : currentBill,
+        ),
+      );
+      showToast(
+        result.alreadyPaid
+          ? "Your payment is already recorded."
+          : "Your payment is recorded and shared with the flat.",
+      );
+    } catch (error) {
+      showToast(
+        error instanceof Error ? error.message : "Could not record your payment.",
+      );
+    } finally {
+      setSettlingBillId(null);
     }
-
-    setBills((current) =>
-      current.map((bill) =>
-        bill.id === billId
-          ? { ...bill, statuses: { ...bill.statuses, [memberName]: true } }
-          : bill,
-      ),
-    );
-    showToast("Your bill status was updated.");
   };
-
   const handleSettleExpense = async (expenseId: string) => {
     if (settlingExpenseId) return;
     setSettlingExpenseId(expenseId);
@@ -313,44 +372,85 @@ export default function ExpensesPage() {
           <h2 className="text-sm font-semibold text-white">
             Fixed monthly bills
           </h2>
-          {bills.map((bill) => {
-            const paidCount = Object.values(bill.statuses).filter(Boolean).length;
-            const amount = bill.perPerson ?? bill.customAmounts?.[currentMember.name] ?? 0;
-            const isPaid = bill.statuses[currentMember.name];
+          {isLoadingBills && bills.length === 0 ? (
+            <SurfaceCard className="p-5 text-sm text-white/70">
+              Loading monthly bills…
+            </SurfaceCard>
+          ) : billsError && bills.length === 0 ? (
+            <SurfaceCard className="p-5 text-sm text-white/70">
+              {billsError}
+            </SurfaceCard>
+          ) : bills.length === 0 ? (
+            <SurfaceCard className="p-5 text-sm text-white/70">
+              No monthly bills have been added yet.
+            </SurfaceCard>
+          ) : (
+            bills.map((bill) => {
+              const paidCount = bill.paidMemberIds.length;
+              const pendingCount = FLAT_MEMBERS.length - paidCount;
+              const amount =
+                bill.perPerson ?? bill.customAmounts?.[currentMember.name] ?? 0;
+              const isPaid = bill.paidMemberIds.includes(currentMember.id);
 
-            return (
-              <SurfaceCard key={bill.id} className="flex items-center gap-4 p-4">
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <h2 className="text-sm font-bold">{bill.title}</h2>
-                      <p className="mt-1 text-xs text-white/60">Due {bill.due}</p>
+              return (
+                <SurfaceCard key={bill.id} className="flex items-center gap-4 p-4">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h2 className="text-sm font-bold">{bill.title}</h2>
+                        <p className="mt-1 text-xs text-white/60">
+                          Due {bill.due}
+                        </p>
+                        <div
+                          role="group"
+                          aria-label="Payment status by flatmate"
+                          className="mt-3 flex items-center -space-x-2"
+                        >
+                          {FLAT_MEMBERS.map((member) => {
+                            const isMemberPaid = bill.paidMemberIds.includes(member.id);
+
+                            return (
+                              <span
+                                key={member.id}
+                                title={`${member.name}: ${isMemberPaid ? "paid" : "pending"}`}
+                                aria-label={`${member.name}: ${isMemberPaid ? "paid" : "pending"}`}
+                                className={`flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#17172d] text-xs font-bold text-white ${
+                                  isMemberPaid ? "bg-[#10B981]" : "bg-slate-300"
+                                }`}
+                              >
+                                {member.name.charAt(0).toUpperCase()}
+                              </span>
+                            );
+                          })}
+                        </div>
+                      </div>
+                      <p className="shrink-0 text-sm font-bold">
+                        ৳{bill.totalAmount.toLocaleString()}
+                      </p>
                     </div>
-                    <p className="shrink-0 text-sm font-bold">
-                      ৳{bill.totalAmount.toLocaleString()}
+                    <p className="mt-2 text-xs text-white/60">
+                      Your share ৳{amount.toLocaleString()} ·{" "}
+                      {paidCount} paid · {pendingCount} pending
                     </p>
                   </div>
-                  <p className="mt-2 text-xs text-white/60">
-                    Your share ৳{amount.toLocaleString()} · {paidCount}/
-                    {FLAT_MEMBERS.length} paid
-                  </p>
-                </div>
-                {isPaid ? (
-                  <span className="text-xs font-semibold text-white/65">
-                    Paid ✓
-                  </span>
-                ) : (
-                  <PillButton
-                    type="button"
-                    onClick={() => handlePayFixedBill(bill.id, currentMember.name)}
-                    className="px-3 py-2"
-                  >
-                    Pay
-                  </PillButton>
-                )}
-              </SurfaceCard>
-            );
-          })}
+                  {isPaid ? (
+                    <span className="text-xs font-semibold text-white/65">
+                      Paid ✓
+                    </span>
+                  ) : (
+                    <PillButton
+                      type="button"
+                      onClick={() => void handlePayFixedBill(bill)}
+                      disabled={Boolean(settlingBillId)}
+                      className="px-3 py-2"
+                    >
+                      {settlingBillId === bill.id ? "Saving…" : "Pay"}
+                    </PillButton>
+                  )}
+                </SurfaceCard>
+              );
+            })
+          )}
         </section>
       )}
 
@@ -396,6 +496,28 @@ export default function ExpensesPage() {
                       <p className="mt-1 text-xs text-white/60">
                         Paid by {expense.paidByName} · {formatDate(expense.createdAt)}
                       </p>
+                      <div
+                        role="group"
+                        aria-label="Payment status by flatmate"
+                        className="mt-3 flex items-center -space-x-2"
+                      >
+                        {expense.splitBetween.map((share) => {
+                          const isPaid = share.status === "Paid";
+
+                          return (
+                            <span
+                              key={share.memberId}
+                              title={`${share.memberName}: ${isPaid ? "paid" : "pending"}`}
+                              aria-label={`${share.memberName}: ${isPaid ? "paid" : "pending"}`}
+                              className={`flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#17172d] text-xs font-bold text-white ${
+                                isPaid ? "bg-[#10B981]" : "bg-slate-300"
+                              }`}
+                            >
+                              {share.memberName.charAt(0).toUpperCase()}
+                            </span>
+                          );
+                        })}
+                      </div>
                     </div>
                     <p className="shrink-0 text-base font-bold">
                       ৳{expense.totalAmount.toLocaleString()}

@@ -1,223 +1,118 @@
-# 🏠 Bachelor Point – Smart Flat Management System
+# 🏠 Bachelor Point
 
-**Bachelor Point** is a full-stack web application designed to simplify and digitize the daily management of bachelor flats. It provides a centralized platform where flat members can manage household responsibilities, track shared expenses, handle bills, maintain shopping lists, and stay updated through real-time activity notifications.
+<p align="center">
+  <strong>Shared living, in sync.</strong><br />
+  A simple home hub for chores, bills, and shared spending.
+</p>
 
-Instead of relying on traditional paper-based records and manual coordination, Bachelor Point brings everything together in one organized and user-friendly platform.
+<p align="center">
+  <a href="https://bachelor-point2026.vercel.app"><strong>Open the live app →</strong></a>
+  &nbsp;·&nbsp;
+  <a href="https://github.com/HamimRaju/Bachelor-Point">Source repository</a>
+</p>
 
-## 🚀 Live Demo
+<p align="center">
+  <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs" />
+  <img alt="React 19" src="https://img.shields.io/badge/React-19-149eca?logo=react&logoColor=white" />
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white" />
+  <img alt="MongoDB" src="https://img.shields.io/badge/MongoDB-database-47a248?logo=mongodb&logoColor=white" />
+  <img alt="Mongoose 9" src="https://img.shields.io/badge/Mongoose-9-880000?logo=mongoose&logoColor=white" />
+</p>
 
-- **Live Website:** https://bachelor-point2026.vercel.app
-- **GitHub Repository:** https://github.com/HamimRaju/Bachelor-Point
+---
 
-## ✨ Key Features
+## At a glance
 
-### 👤 Authentication & Personalized Dashboard
-- Secure user authentication using Better Auth.
-- Individual accounts for each flat member.
-- Personalized dashboards based on the logged-in user.
-- Protected routes and user-specific access.
+Bachelor Point helps a five-person flat coordinate everyday responsibilities and shared costs. Members sign in with an authorized account and see the same shared household data.
 
-### 🔄 Automated Task Rotation
-- Automatically manages rotating household responsibilities among five flat members.
-- Tracks current assignments and previous task history.
-- Members can mark their assigned tasks as **Done** or **Skip**.
-- Only the assigned member can perform actions on their own task.
-- Skipped responsibilities remain pending while the next member receives the immediate turn.
-
-### 🔔 Notification System
-- Notifies members about completed tasks and important household activities.
-- Maintains notification history.
-- Supports marking notifications as read.
-
-### 🛒 Shopping List Management
-- Organizes daily household shopping requirements.
-- Helps members keep track of shared purchasing needs.
-
-### 💰 Bill Management
-- Manages regular household bills, including:
-  - House Rent
-  - Wi-Fi Bill
-  - Garbage Bill
-  - Electricity Bill
-- Tracks payment status and bill records.
-
-### 🧾 Shared Expense Management
-- Records additional household expenses.
-- Supports shared expense distribution among flat members.
-- Helps maintain transparency in household spending.
-
-### 👥 Member Management
-- Displays flat members' profiles and information.
-- Includes member photos and quick contact options.
-- Provides an organized overview of all flatmates.
-
-### 📅 Activity & Calendar
-- Keeps track of household activities.
-- Helps members stay informed about responsibilities and upcoming tasks.
-
-## 🛠️ Technology Stack
-
-| Technology | Purpose |
+| | |
 |---|---|
-| Next.js | Full-stack React framework |
-| React.js | User interface development |
-| TypeScript | Type-safe development |
-| Tailwind CSS | Styling and responsive design |
-| HeroUI | UI components |
-| Better Auth | Authentication and session management |
-| MongoDB | Database |
-| Mongoose | Database modeling and data management |
-| Lucide React | Icons |
-| Vercel | Deployment |
-| Git & GitHub | Version control and collaboration |
+| 🔄 **Fair chore rotation** | Independent task rotations, completion history, and skip-without-losing-your-turn behavior. Only the assigned member can act. |
+| 🧾 **Bills & shared expenses** | Fixed Wi-Fi, Moyla, and rent bills with per-member payment indicators; add shared expenses and track each member’s balance. |
+| 🏡 **One shared dashboard** | See the current task turns, expenses, and flatmate directory in a mobile-friendly interface. |
 
-## 🧠 Core Application Logic
+## Built with
 
-One of the main challenges of Bachelor Point is implementing a fair and reliable task rotation system.
+- **Next.js App Router** with React and TypeScript
+- **Tailwind CSS** for styling
+- **Better Auth** for sessions and email/password sign-in
+- **MongoDB + Mongoose** for shared data
+- **Turbopack** for local development and builds
 
-The application manages household responsibilities across five members:
+## Run locally
 
-- Raju
-- Rubel
-- Arefin
-- Real
-- Radin
+### Requirements
 
-**Task Assignment Rules:**
-
-1. Each rotating task has its own assignment sequence.
-2. The system identifies the member whose turn it is.
-3. Only the currently assigned member can complete or skip that task.
-4. When a task is completed, the system updates its rotation history and notifies the members.
-5. When a member skips a task, the next member receives the immediate turn, while the original skipped responsibility remains pending.
-
-This approach ensures accountability and prevents unauthorized task updates.
-
-## 📱 User Experience
-
-- Mobile-first and responsive interface.
-- App-like navigation for easier access on smartphones.
-- Personalized dashboard for each member.
-- Organized sections for tasks, bills, expenses, notifications, and shopping.
-- User-friendly interactions and clear task statuses.
-
-## ⚙️ Getting Started
-
-Follow these instructions to run the project locally.
-
-### Prerequisites
-
-Make sure you have installed:
-
-- Node.js (LTS)
+- Node.js **22.6 or newer** (the test command uses Node’s built-in TypeScript stripping)
 - npm
-- Git
-- MongoDB database (local or MongoDB Atlas)
+- A MongoDB database, local or hosted
 
-### 1. Clone the Repository
+### 1. Install dependencies
 
 ```bash
 git clone https://github.com/HamimRaju/Bachelor-Point.git
-```
-
-### 2. Navigate to the Project Directory
-
-```bash
 cd Bachelor-Point
-```
-
-### 3. Install Dependencies
-
-```bash
 npm install
 ```
 
-### 4. Configure Environment Variables
+### 2. Configure the environment
 
-Create a `.env.local` file in the root directory and configure the required environment variables.
+Create `.env.local` in the project root:
 
 ```env
-MONGODB_URI=your_mongodb_connection_string
-BETTER_AUTH_SECRET=your_auth_secret
+MONGODB_URI=mongodb://127.0.0.1:27017/bachelor-point
+BETTER_AUTH_SECRET=replace-with-a-long-random-secret
 BETTER_AUTH_URL=http://localhost:3000
+
+# Optional; defaults to the browser's current origin
+NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
-Add any additional environment variables required by your current application configuration.
+Use the canonical public origin for `BETTER_AUTH_URL` in a deployed environment. Better Auth stores its data in the `bachelor-point` database. Environment files are git-ignored.
 
-### 5. Run the Development Server
+### 3. Start the app
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser to access the application.
+Open [http://localhost:3000](http://localhost:3000). Sign-up is limited to the five email addresses in `src/lib/members.ts`.
 
-## 📂 Project Structure
+## Useful commands
 
-The project follows a structured Next.js application architecture.
+| Command | What it does |
+|---|---|
+| `npm run dev` | Start the development server |
+| `npm run lint` | Run ESLint |
+| `npx tsc --noEmit` | Type-check the app |
+| `npm test` | Run the task-rotation unit tests |
+| `npm run build` | Create a production build |
+| `npm run start` | Serve the production build |
+| `npm audit` | Check dependencies for known advisories |
+
+`npm test` currently runs `tests/task-rotation.test.mts` only and does not require MongoDB.
+
+## Project map
 
 ```text
-Bachelor-Point/
-│
-├── public/
-│   └── Member profile images
-│
-├── src/
-│   ├── app/
-│   │   ├── (auth)/
-│   │   │   ├── sign-in/
-│   │   │   └── sign-up/
-│   │   │
-│   │   ├── (dashboard)/
-│   │   │   └── Dashboard pages
-│   │   │
-│   │   ├── actions/
-│   │   │   ├── auth.actions.ts
-│   │   │   ├── task.actions.ts
-│   │   │   ├── bill.actions.ts
-│   │   │   └── expense.actions.ts
-│   │   │
-│   │   └── ...
-│   │
-│   ├── lib/
-│   │   └── db.ts
-│   │
-│   └── models/
-│       └── Bill.ts
-│
-├── .env.local
-├── package.json
-└── README.md
+actions/                 Authenticated server actions
+src/
+  app/                   App Router pages, layouts, and API routes
+  components/            Shared UI components
+  lib/                   Auth, database, member registry, and app logic
+  models/                Mongoose schemas
+tests/                   Task-rotation tests
 ```
 
-*Note: The structure above is a simplified overview. Actual folders and files may vary depending on the latest implementation.*
+### Data notes
 
-## 🔐 Security & Access Control
-
-- Authenticated access to protected application areas.
-- Individual user sessions.
-- Server-side authorization for task actions.
-- Restricted task completion and skipping to the assigned member.
-- Environment variables used for sensitive configuration.
-
-## 🎯 Project Goals
-
-Bachelor Point was developed to solve common management problems in shared bachelor accommodations by introducing:
-
-- Better coordination among flat members.
-- Transparent expense and bill management.
-- Fair distribution of household responsibilities.
-- Reduced manual effort.
-- A centralized digital management system.
-
-## 👨‍💻 Developer
-
-**Sheikh Hamim Islam Raju**
-
-- GitHub: [@HamimRaju](https://github.com/HamimRaju)
+- `src/lib/members.ts` is the source of truth for the five authorized flatmates. Task rotation and fixed-bill payment status use these member IDs.
+- Fixed-bill payment status is stored separately in `FixedBillPayment`; it is not the legacy `Bill` seed collection.
+- `POST /api/seed` requires an authenticated member. It adds any missing rotation tasks and inserts legacy default `Bill` records only when that collection is empty. Use it only when you intend to initialize those records, especially against a shared database.
 
 ---
 
-⭐ If you find this project interesting, consider giving the repository a star!
-
-**Built with ❤️ to make shared living simpler and smarter.**
+<p align="center">
+  Made for real flatmates, not group-chat chaos.<br />
+  Built with ❤️ by <a href="https://github.com/HamimRaju">Sheikh Hamim Islam Raju</a>
+</p>

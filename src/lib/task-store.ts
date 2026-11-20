@@ -6,6 +6,7 @@ import { FLAT_MEMBERS, type FlatMember } from "@/lib/members";
 import {
     applyRotationAction,
     createRotationCycle,
+    normalizeRotationCycleHistory,
     ROTATING_TASKS,
     type RotationCycle,
     type TaskAction,
@@ -205,7 +206,10 @@ export async function updateTaskRotation(
             throw new Error("This rotation cycle changed. Refresh and try again.");
         }
 
-        const updatedCycle = applyRotationAction(task.activeCycle as RotationCycle, {
+        const activeCycle = normalizeRotationCycleHistory(
+            task.activeCycle as RotationCycle,
+        );
+        const updatedCycle = applyRotationAction(activeCycle, {
             taskId: task._id.toString(),
             authUserId: member.authUserId,
             memberId: member.id,

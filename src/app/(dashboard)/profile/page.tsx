@@ -37,9 +37,9 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(false);
   const [signOutError, setSignOutError] = useState<string | null>(null);
   const { data: session } = authClient.useSession();
-  const email = session?.user?.email?.toLowerCase() || "raju@bachelorpoint.com";
+  const email = session?.user?.email?.toLowerCase() ?? "";
   const userName =
-    fullNames[email] ?? session?.user?.name ?? "Hamim Islam Raju";
+    fullNames[email] ?? session?.user?.name ?? "Loading profile…";
 
   const handleSignOut = async () => {
     setLoading(true);

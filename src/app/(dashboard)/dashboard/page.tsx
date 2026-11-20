@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { completeTask, getTaskRotations } from "@/actions/task.actions";
 import { PageFrame, SurfaceCard } from "@/components/ui";
 import BrandLogo from "@/components/BrandLogo";
@@ -11,6 +11,7 @@ import { FLAT_MEMBERS } from "@/lib/members";
 import { mergeTaskRotationViews } from "@/lib/task-view";
 import type { TaskRotationView } from "@/lib/task-rotation";
 import { authClient } from "@/lib/auth-client";
+import type { ExpenseView } from "@/lib/expense-view";
 
 const taskColors = ["mint", "teal", "gold", "mint", "gold"] as const;
 
@@ -48,6 +49,15 @@ export default function DashboardPage() {
   const [loadingTaskKey, setLoadingTaskKey] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [hasLoadedTasks, setHasLoadedTasks] = useState(false);
+  const [sharedExpensesTotal, setSharedExpensesTotal] = useState<number | null>(
+    null,
+  );
+
+  const updateSharedExpensesTotal = useCallback((expenses: ExpenseView[]) => {
+    setSharedExpensesTotal(
+      expenses.reduce((total, expense) => total + expense.totalAmount, 0),
+    );
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -160,8 +170,14 @@ export default function DashboardPage() {
               <p className="mt-0.5 text-xs text-white/65">Members</p>
             </div>
             <div className="text-right">
-              <p className="text-xl font-extrabold tracking-tight sm:text-2xl">৳2,450 <span className="text-xs font-semibold text-white/65">/ month</span></p>
-              <p className="mt-0.5 text-xs text-white/65">Total shared</p>
+              <p className="text-xl font-extrabold tracking-tight sm:text-2xl">
+                {sharedExpensesTotal === null
+                  ? "Loading…"
+                  : `৳${sharedExpensesTotal.toLocaleString()}`}
+              </p>
+              <p className="mt-0.5 text-xs text-white/65">
+                Recorded shared expenses
+              </p>
             </div>
           </div>
         </SurfaceCard>
@@ -260,7 +276,9 @@ export default function DashboardPage() {
         )}
       </SurfaceCard>
 
-      <OutstandingExpenseSummary />
+      <OutstandingExpenseSummary
+        onExpensesLoaded={updateSharedExpensesTotal}
+      />
 
       <SurfaceCard className="home-expense-card p-4 sm:p-5">
         <div className="flex items-start justify-between gap-3">
