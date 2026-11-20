@@ -1,32 +1,29 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface ISplitShare {
-    user: mongoose.Types.ObjectId;
+    user: string;
     amount: number;
     status: "Pending" | "Paid";
     paidAt?: Date;
+    settledBy?: string;
 }
 
 export interface IExpense extends Document {
     title: string;
     totalAmount: number;
-    paidBy: mongoose.Types.ObjectId;
+    paidBy: string;
     splitBetween: ISplitShare[];
     createdAt: Date;
 }
 
 const ExpenseSchema = new Schema<IExpense>(
     {
-        title: { type: String, required: true },
+        title: { type: String, required: true, trim: true, maxlength: 100 },
         totalAmount: { type: Number, required: true },
-        paidBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
+        paidBy: { type: String, required: true },
         splitBetween: [
             {
-                user: {
-                    type: Schema.Types.ObjectId,
-                    ref: "User",
-                    required: true,
-                },
+                user: { type: String, required: true },
                 amount: { type: Number, required: true },
                 status: {
                     type: String,
@@ -34,6 +31,7 @@ const ExpenseSchema = new Schema<IExpense>(
                     default: "Pending",
                 },
                 paidAt: { type: Date },
+                settledBy: { type: String },
             },
         ],
     },

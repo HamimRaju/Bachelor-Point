@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { completeTask, getTaskRotations } from "@/actions/task.actions";
 import { PageFrame, SurfaceCard } from "@/components/ui";
+import OutstandingExpenseSummary from "@/components/OutstandingExpenseSummary";
 import { FLAT_MEMBERS } from "@/lib/members";
 import { mergeTaskRotationViews } from "@/lib/task-view";
 import type { TaskRotationView } from "@/lib/task-rotation";
@@ -257,6 +258,8 @@ export default function DashboardPage() {
           </div>
         )}
       </SurfaceCard>
+
+      <OutstandingExpenseSummary />
 
       <SurfaceCard className="home-expense-card p-4 sm:p-5">
         <div className="flex items-start justify-between gap-3">
